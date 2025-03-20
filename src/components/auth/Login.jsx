@@ -65,6 +65,10 @@ export default function Login() {
                 <a href="#" className="text-decoration-underline text-black">Forgot Password?</a>
               </div>
               <button type="submit" className="btn btn-warning w-100 text-white">Login</button>
+              <div className='w-100 d-flex mt-3 justify-content-center'>
+                <p>Don't have an Account? <a href="/register" className="text-decoration-underline">Register</a></p>
+
+              </div>
             </form>
           </div>
         </div>

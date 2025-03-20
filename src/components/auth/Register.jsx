@@ -79,6 +79,9 @@ export default function Register() {
                                 {errors.password && <div className="invalid-feedback d-block">{errors.password.message}</div>}
                             </div>
                             <button type="submit" className="btn btn-warning w-100 text-white">Register</button>
+                            <div className='w-100 d-flex mt-3 justify-content-center'>
+                                <p>Already having an Account? <a href="/login" className="text-decoration-underline">Login</a></p>
+                            </div>
                         </form>
                     </div>
                 </div>

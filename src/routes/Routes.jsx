@@ -5,7 +5,10 @@ import Login from '../components/auth/Login'
 import Register from '../components/auth/Register'
 import Slide from '../components/customer/Slide'
 import Cart from '../components/customer/Cart'
-import Your_profile from '../components/customer/Your_profile'
+import Your_profile from '../components/customer/profile/Your_profile'
+import Orders from '../components/customer/Orders'
+import ProductSearch from '../components/customer/ProductSearch'
+
 
 export default function Router() {
   return (
@@ -16,6 +19,8 @@ export default function Router() {
             <Route path='slide' element={<Slide/>}/>
             <Route path='cart' element={<Cart/>}/>
             <Route path='profile' element={<Your_profile/>}/>
+            <Route path='orders' element={<Orders/>}/>
+            <Route path='products' element={<ProductSearch/>}/>
         </Route>
     </Routes>
   )

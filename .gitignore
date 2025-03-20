@@ -24,6 +24,6 @@ dist-ssr
 *.sw?
 
 Navbar.jsx
-Slide.jsx
 Your_profile.jsx
-cart.jsx
+Orders.jsx
+profile
