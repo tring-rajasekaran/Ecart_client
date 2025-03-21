@@ -8,6 +8,10 @@ import Cart from '../components/customer/Cart'
 import Your_profile from '../components/customer/profile/Your_profile'
 import Orders from '../components/customer/Orders'
 import ProductSearch from '../components/customer/ProductSearch'
+import MerchantLogin from '../components/merchant/MerchantLogin'
+import MerchantRegister from '../components/merchant/MerchantRegister'
+import MerchantPage from '../components/merchant/MerchantPage'
+import MerchantOrders from '../components/merchant/MerchantOrders'
 
 
 export default function Router() {
@@ -22,6 +26,10 @@ export default function Router() {
             <Route path='orders' element={<Orders/>}/>
             <Route path='products' element={<ProductSearch/>}/>
         </Route>
+        <Route path='/MerchantLogin' element={<MerchantLogin/>}/>
+            <Route path='/MerchantRegister' element={<MerchantRegister/>}/>
+            <Route path='/MerchantPage' element={<MerchantPage/>}/>
+            <Route path='/Merchantorders' element={<MerchantOrders/>}/> 
     </Routes>
   )
 }
