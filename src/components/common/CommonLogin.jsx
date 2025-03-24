@@ -6,6 +6,10 @@ export default function CommonLogin({ title, onSubmit, showRegisterLink }) {
   const { register, handleSubmit, formState: { errors } } = useForm();
   const [showPassword, setShowPassword] = useState(false);
 
+  const login_type = new URLSearchParams(location.search).get('type')
+
+  const registerUrl = login_type === "Merchant" ? "/MerchantRegister?type=Merchant" : "/register";
+
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
@@ -67,10 +71,11 @@ export default function CommonLogin({ title, onSubmit, showRegisterLink }) {
           {title}
         </button>
 
-        {/* Register Link (Only for Login Page) */}
         {showRegisterLink && (
           <div className="w-100 d-flex mt-3 justify-content-center">
-            <p>Don't have an Account? <a href="/register" className="text-decoration-underline">Register</a></p>
+            <p>Don't have an Account ? 
+            <a href={registerUrl} className="text-decoration-underline">Register </a>
+              </p>
           </div>
         )}
       </form>

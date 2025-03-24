@@ -5,17 +5,38 @@ import 'bootstrap/dist/js/bootstrap.bundle.min';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import { BsCurrencyRupee } from "react-icons/bs";
+import { RANDOM_PRODUCT } from '../../graphql/query/productQuery';
+import { useQuery } from '@apollo/client';
+import { useEffect, useState } from 'react';
 
 
 export default function Slide() {
+
+  const [products, setProducts] = useState([]);
+  const { data, loading, error } = useQuery(RANDOM_PRODUCT);
+
+  console.log(data, "responce");
+  useEffect(() => {
+    if (data && data.getRandomProducts) {
+      setProducts(data.getRandomProducts);
+    }
+  }, [data]);
+
+  console.log(error);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error fetching products</p>;
+
+
+
   return (
     <>
-      <div className=" px-2 mt-4 border border-dark w-100 ">
+      <div className=" px-2 mt-4 w-100 ">
         <Carousel>
           <Carousel.Item>
             <div className='d-flex justify-content-evenly'>
               <div>
-                <img className="d-block" style={{ height: "300px", width:"600px" }} src="https://images-eu.ssl-images-amazon.com/images/G/31/img23/Wireless/Isha/Xiaomi/prebook/D212431502_IN_WLD_Xiaomi15_New_Launch_Tall_hero_3000x1200._CB547895039_.jpg" alt="First slide" />
+                <img className="d-block" style={{ height: "300px", width: "600px" }} src="https://images-eu.ssl-images-amazon.com/images/G/31/img23/Wireless/Isha/Xiaomi/prebook/D212431502_IN_WLD_Xiaomi15_New_Launch_Tall_hero_3000x1200._CB547895039_.jpg" alt="First slide" />
               </div>
               <div className="d-flex flex-column align-items-center justify-content-end text-center p-3" style={{ height: "200px" }}>
                 <h3 className="text-black">First slide label</h3>
@@ -38,75 +59,35 @@ export default function Slide() {
         </Carousel>
       </div>
       <div className='w-100 d-flex justify-content-center p-3'>
-        <h2>TOP SELLING PRODUCTS</h2>
+        <h2>PRODUCTS YOU MAY LIKE</h2>
       </div>
-      <div className="m-3 border border-dark d-flex flex-row p-3">
-        <Card className='me-4' style={{ width: '300px', height: '450px' }}>
-          <Card.Img
-            variant="top"
-            src="https://via.placeholder.com/300x120"
-            style={{ height: "220px", objectFit: "cover" }}
-          />
-          <Card.Body className="d-flex flex-column">
-            <Card.Title>Card Title</Card.Title>
-            <Card.Text className="flex-grow-1">
-              Some quick example text to build on the card title and make up the bulk of the card's content.
-            </Card.Text>
-            <p>Price :<span className='text-success fw-bold'><BsCurrencyRupee className='mb-1 fw-bold' />540</span></p>
-            <Button variant="warning">Add to Cart</Button>
-          </Card.Body>
-        </Card>
+      <div className="m-2 d-flex flex-wrap gap-3 justify-content-center p-3">
+        {products.map(product => (
+          <Card key={product.id} className='col-12 col-md-6 col-lg-3 mb-4' style={{ width: '290px', height: '450px' }}>
+            <Card.Img
+              variant="top"
+              src={product.image || "https://via.placeholder.com/300x220"}
+              style={{ height: "220px", objectFit: "cover" ,padding:"10px" , }}
+            />
+            <Card.Body className="d-flex flex-column">
+              <Card.Title>{product.product_name}</Card.Title>
 
-        <Card className='me-4' style={{ width: '300px', height: '450px' }}>
-          <Card.Img
-            variant="top"
-            src="https://via.placeholder.com/300x120"
-            style={{ height: "220px", objectFit: "cover" }}
-          />
-          <Card.Body className="d-flex flex-column">
-            <Card.Title>Card Title</Card.Title>
-            <Card.Text className="flex-grow-1">
-              Some quick example text to build on the card title and make up the bulk of the card's content.
-            </Card.Text>
-            <p>Price :<span className='text-success fw-bold'><BsCurrencyRupee className='mb-1 fw-bold' />540</span></p>
-            <Button variant="warning">Add to Cart</Button>
-          </Card.Body>
-        </Card>
+              <Card.Text
+                className="flex-grow-1 text-muted p-1"
+                style={{
+                  maxHeight: "70px",  
+                  overflowY: "auto", 
+                  textOverflow: "ellipsis",
+                  whiteSpace: "normal"  
+                }}>
+                {product.description}
+              </Card.Text>
 
-        {/* third */}
-
-        <Card className='me-4' style={{ width: '300px', height: '450px' }}>
-          <Card.Img
-            variant="top"
-            src="https://via.placeholder.com/300x120"
-            style={{ height: "220px", objectFit: "cover" }}
-          />
-          <Card.Body className="d-flex flex-column">
-            <Card.Title>Card Title</Card.Title>
-            <Card.Text className="flex-grow-1">
-              Some quick example text to build on the card title and make up the bulk of the card's content.
-            </Card.Text>
-            <p>Price :<span className='text-success fw-bold'><BsCurrencyRupee className='mb-1 fw-bold' />540</span></p>
-            <Button variant="warning">Add to Cart</Button>
-          </Card.Body>
-        </Card>
-
-        <Card className='me-4' style={{ width: '300px', height: '450px' }}>
-          <Card.Img
-            variant="top"
-            src="https://via.placeholder.com/300x120"
-            style={{ height: "220px", objectFit: "cover" }}
-          />
-          <Card.Body className="d-flex flex-column">
-            <Card.Title>Card Title</Card.Title>
-            <Card.Text className="flex-grow-1">
-              Some quick example text to build on the card title and make up the bulk of the card's content.
-            </Card.Text>
-            <p>Price :<span className='text-success fw-bold'><BsCurrencyRupee className='mb-1 fw-bold' />540</span></p>
-            <Button variant="warning">Add to Cart</Button>
-          </Card.Body>
-        </Card>
-
+              <p>Price: <span className='text-success fw-bold'><BsCurrencyRupee className='mb-1 fw-bold' />{product.price}</span></p>
+              <Button variant="warning">Add to Cart</Button>
+            </Card.Body>
+          </Card>
+        ))}
       </div>
     </>
   );

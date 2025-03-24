@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import { FaUserLarge, FaLocationDot } from "react-icons/fa6"; 
-import { FaSearch, FaShoppingCart } from "react-icons/fa"; 
+import React, { useState, useEffect, Fragment } from 'react';
+import { FaUserLarge, FaLocationDot } from "react-icons/fa6";
+import { FaSearch, FaShoppingCart } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 
 
@@ -8,28 +8,39 @@ import { Link, useNavigate } from "react-router-dom";
 import '@fortawesome/fontawesome-free/css/all.min.css';
 
 export default function Navbar() {
-    const [userId, setUserId] = useState(null);
+    const [userId, setUserId] = useState(true);
     const [showLoginAlert, setShowLoginAlert] = useState(false);
-    const [searchTerm,setSearchTerm] = useState("");
+    const [searchTerm, setSearchTerm] = useState("");
     const navigate = useNavigate();
 
 
-    useEffect(() => {
-        const storedUserId = localStorage.getItem('user_id');
-        if (!storedUserId) {
-            setShowLoginAlert(true);
-        }
-        setUserId(storedUserId);
-    }, []);
+    // useEffect(() => {
+    //     const storedUserId = localStorage.getItem('user_id');
+    //     if (!storedUserId) {
+    //         setShowLoginAlert(true);
+    //     }
+    //     setUserId(storedUserId);
+    // }, []);
 
-    useEffect(()=>{
-        if(searchTerm && searchTerm.trim() !==""){
+    useEffect(() => {
+        if (searchTerm && searchTerm.trim() !== "") {
             navigate(`/products?type=${searchTerm}`)
         }
-    },[searchTerm])
+    }, [searchTerm])
 
-    const gotocart=()=>{
+    const gotocart = () => {
         navigate("/cart")
+    }
+    const MerchantLogin = () => {
+        navigate(`/MerchantLogin?type=Merchant`)
+    }
+    const CustomerLogin = () => {
+        console.log("moving to login");
+
+        navigate("login")
+    }
+    const moveTohome = () => {
+        navigate("/slide")
     }
 
     return (
@@ -43,7 +54,7 @@ export default function Navbar() {
 
             <nav className="navbar navbar-expand bg-warning w-100 d-flex justify-content-between px-4">
                 <div className='d-flex align-items-center'>
-                    <h5 className="navbar-brand" href="#">E-cart</h5>
+                    <h5 className="navbar-brand" style={{ cursor: "pointer" }} onClick={() => moveTohome()}>E-cart</h5>
                     <div className='d-flex align-items-center gap-2 ms-3'>
                         <FaLocationDot className='mb-1' />
                         <h5 className='mb-1'>Chennai</h5>
@@ -57,7 +68,7 @@ export default function Navbar() {
                                 type="search"
                                 placeholder="Search Products"
                                 aria-label="Search"
-                                onChange={(e)=> setSearchTerm(e.target.value)}
+                                onChange={(e) => setSearchTerm(e.target.value)}
                             />
                             <FaSearch className="px-2 text-warning" style={{ fontSize: "35px" }} />
                         </div>
@@ -66,7 +77,7 @@ export default function Navbar() {
 
                 <div className="d-flex align-items-center gap-3">
                     <div className="position-relative">
-                        <FaShoppingCart className="fs-3 text-dark" style={{cursor:"pointer"}} onClick={()=>gotocart()}/>
+                        <FaShoppingCart className="fs-3 text-dark" style={{ cursor: "pointer" }} onClick={() => gotocart()} />
                         <span className="position-absolute top-0 start-80 translate-middle badge rounded-pill bg-danger text-white">
                             10
                         </span>
@@ -77,18 +88,29 @@ export default function Navbar() {
                         <button className="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown" type="button" aria-expanded="false">
                             <FaUserLarge />
                         </button>
-                        <ul className="dropdown-menu dropdown-menu-end mt-2">
+                        <ul className="dropdown-menu dropdown-menu-end mt-2 border border-none">
                             {userId ? (
                                 <>
-                                    <li><a className="dropdown-item" href="#">Enter as Merchant</a></li>
-                                    <li><a className="dropdown-item" href="#">Orders</a></li>
-                                    <li><a className="dropdown-item" href="#">Your Profile</a></li>
-                                    <li><a className="dropdown-item" href="#">Logout</a></li>
+                                    <button className="dropdown-btn">
+                                        <a className="dropdown-item" href="/MerchantLogin">Enter as Merchant</a>
+                                    </button>
+                                    <button className="dropdown-btn">
+                                        <a className="dropdown-item" href="/orders">Orders</a>
+                                    </button>
+                                    <button className="dropdown-btn">
+                                        <a className="dropdown-item" href="/profile">Your Profile</a>
+                                    </button>
+                                    <button className="dropdown-btn">
+                                        <a className="dropdown-item" href="#">Logout</a>
+                                    </button>
                                 </>
                             ) : (
-                                <li className="dropdown-item text-danger fw-bold text-center">
-                                     Login 
-                                </li>
+                                // <Fragment className="align-items-start d-flex flex-start">
+                                // <button className="dropdown-item text-success fw-bold text-center" onClick={()=>CustomerLogin()} >Login </button>
+                                // <button className="dropdown-item text-success fw-bold text-center" onClick={()=>MerchantLogin()}>Login as Merchant</button>
+                                // </Fragment>
+                                <>
+                                </>
                             )}
                         </ul>
                     </div>
