@@ -20,7 +20,6 @@ export default function Login() {
       });
 
       console.log("User logged in successfully");
-      localStorage.setItem("user_id",)
       navigate("/slide"); 
 
     } catch (err) {

@@ -12,6 +12,7 @@ import MerchantLogin from '../components/merchant/MerchantLogin'
 import MerchantRegister from '../components/merchant/MerchantRegister'
 import MerchantPage from '../components/merchant/MerchantPage'
 import MerchantOrders from '../components/merchant/MerchantOrders'
+import MerchantNewProduct from '../components/merchant/MerchantNewProduct'
 
 
 export default function Router() {
@@ -30,6 +31,7 @@ export default function Router() {
             <Route path='/MerchantRegister' element={<MerchantRegister/>}/>
             <Route path='/MerchantPage' element={<MerchantPage/>}/>
             <Route path='/Merchantorders' element={<MerchantOrders/>}/> 
+            <Route path='/MerchantNewProduct' element={<MerchantNewProduct/>}/>
     </Routes>
   )
 }

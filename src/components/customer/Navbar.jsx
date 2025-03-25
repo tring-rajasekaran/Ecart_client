@@ -24,9 +24,10 @@ export default function Navbar() {
 
     useEffect(() => {
         if (searchTerm && searchTerm.trim() !== "") {
-            navigate(`/products?type=${searchTerm}`)
+            navigate(`/products?search=${encodeURIComponent(searchTerm.trim())}`);
         }
-    }, [searchTerm])
+    }, [searchTerm]); // Ensure navigate is included in dependencies
+
 
     const gotocart = () => {
         navigate("/cart")
@@ -61,18 +62,20 @@ export default function Navbar() {
                     </div>
                 </div>
                 <div>
-                    <form className="d-flex w-100" role="search">
+                    <form className="d-flex w-100" role="search" onSubmit={(e) => e.preventDefault()}>
                         <div className="d-flex bg-white align-items-center p-2" style={{ width: "400px", height: "40px", borderRadius: "10px" }}>
                             <input
                                 className="form-control border-0 shadow-none w-100 h-100"
                                 type="search"
                                 placeholder="Search Products"
                                 aria-label="Search"
+                                value={searchTerm} // Ensure the value stays after pressing Enter
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                             <FaSearch className="px-2 text-warning" style={{ fontSize: "35px" }} />
                         </div>
                     </form>
+
                 </div>
 
                 <div className="d-flex align-items-center gap-3">

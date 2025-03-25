@@ -2,28 +2,65 @@ import React, { useState, useEffect } from "react";
 import order_img from '../../../assets/customer/order.jpg';
 import '../../customer/profile/Your_profile.css';
 import { USER_DETAILS } from "../../../graphql/query/customerQuery";
-import { useQuery } from "@apollo/client";
+import { UPDATE_CUSTOMER_DETAILS } from "../../../graphql/mutation/customerMutation";
+import { useQuery, useMutation } from '@apollo/client';
+import { useNavigate } from "react-router-dom";
 
 export default function Profile() {
-  const { data, loading, error } = useQuery(USER_DETAILS);
-  const [user, setUser] = useState({ name: "", email: "", address: "" }); 
-
-  useEffect(() => {
-    if (data && data.getCustomerDetails) {
-      setUser(data.getCustomerDetails);
-    }
-  }, [data]);
-  
-  console.log(data);
-
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error fetching user details</p>;
-
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    address: "",
+  });
   const [isEditing, setIsEditing] = useState(false);
 
+  const { loading, error, data } = useQuery(USER_DETAILS, {
+    variables: { id: 2 },
+  });
+
+  const [updateCustomerDetails] = useMutation(UPDATE_CUSTOMER_DETAILS);
+
+  useEffect(() => {
+    if (data && data.getCustomerDetails?.length > 0) {
+      setFormData({
+        name: data.getCustomerDetails[0].name || "",
+        email: data.getCustomerDetails[0].email || "",
+        address: data.getCustomerDetails[0].address || "",
+      });
+    }
+  }, [data]);
+
   const handleChange = (e) => {
-    setUser({ ...user, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
+
+  useEffect(() => {
+    console.log(formData.address + formData.name + " address ");
+  }, [formData.address]);
+
+  const handleSave = async () => {
+    try {
+      await updateCustomerDetails({
+        variables: {
+          id: 2,
+          name: formData.name,
+          address: formData.address,
+        },
+      });
+
+      setIsEditing(false);
+      alert("Profile updated successfully!");
+    } catch (err) {
+      console.error("Error updating profile:", err);
+      alert("Failed to update profile!");
+    }
+  };
+
 
   return (
     <>
@@ -33,9 +70,7 @@ export default function Profile() {
       <div className="mt-2 d-flex flex-row justify-content-evenly ms-5">
         <div className="card p-3 border border-warning" style={{ width: "350px" }}>
           <div className="text-center position-relative">
-            <div className="position-relative d-inline-block">
-              <h4>Your Profile</h4>
-            </div>
+            <h4>Your Profile</h4>
           </div>
 
           <div className="card-body">
@@ -46,16 +81,18 @@ export default function Profile() {
                   type="text"
                   className="form-control border border-none focus-ring focus-ring-warning"
                   name="name"
-                  value={user.name} 
+                  value={formData.name}
                   onChange={handleChange}
                 />
               ) : (
-                <p className="border p-2">{user.name}</p>
+                <p className="border p-2">{formData.name}</p>
               )}
             </div>
+
+
             <div className="mb-2">
               <label className="fw-bold py-1">Email</label>
-              <p className="border p-2 bg-light">{user.email}</p>
+              <p className="border p-2 bg-light">{formData.email}</p>
             </div>
 
             <div className="mb-2">
@@ -63,30 +100,34 @@ export default function Profile() {
               {isEditing ? (
                 <textarea
                   className="form-control border border-none focus-ring focus-ring-warning"
-                  name="address"
                   rows="2"
-                  value={user.address}  
+                  name="address"
+                  value={formData.address}
                   onChange={handleChange}
                 ></textarea>
               ) : (
-                <p className="border p-2 h-50">{user.address}</p>
+                <p className="border p-2 h-50">
+                  {formData.address.trim() !== "" ? formData.address : "Please fill your delivery address by clicking the edit button."}
+                </p>
               )}
             </div>
-            <button className="btn btn-warning w-100" onClick={() => setIsEditing(!isEditing)}>
+
+            <button className="btn btn-warning w-100" onClick={isEditing ? handleSave : () => setIsEditing(true)}>
               {isEditing ? "Save" : "Edit"}
             </button>
           </div>
         </div>
 
+        {/* Orders Section */}
         <div className="w-50">
           <div className="w-100 h-50 d-flex justify-content-around align-items-center p-2 mt-3 border border-warning rounded">
             <div className="w-100 h-100 ms-3">
               <img src={order_img} alt="Order" className="rounded float-center w-50" />
             </div>
             <div className="w-100 h-50 d-flex flex-column align-items-center justify-content-center me-3">
-              <a className="btn rounded bg-warning border border-none p-2 mb-3" href="/orders">
-                Your orders
-              </a>
+              <button
+                className="btn rounded bg-warning border border-none p-2 mb-3"
+                onClick={() => navigate("/orders")}>Your orders</button>   
               <p>Please Check Your Orders!</p>
             </div>
           </div>

@@ -11,3 +11,15 @@ export const RANDOM_PRODUCT = gql`
     }
   }
 `;
+
+export const SEARCH_PRODUCTS = gql`
+  query SearchProducts($search: String!) {
+    searchProducts(search: $search) {
+      product_id
+      product_name
+      description
+      price
+      image
+    }
+  }
+`;

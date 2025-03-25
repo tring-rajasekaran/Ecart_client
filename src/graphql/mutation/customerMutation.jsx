@@ -11,3 +11,10 @@ export const LOGIN_USER = gql`
   }
 `;
 
+export const UPDATE_CUSTOMER_DETAILS = gql`
+  mutation UpdateCustomerDetails($id: Int!, $name: String!, $address: String!) {
+    setCustomerDetails(id: $id, name: $name, address: $address)
+  }
+`;
+
+
