@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { FaUserLarge, FaLocationDot } from "react-icons/fa6";
 import { FaSearch, FaShoppingCart } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
@@ -6,12 +6,18 @@ import { Link, useNavigate } from "react-router-dom";
 
 
 import '@fortawesome/fontawesome-free/css/all.min.css';
+import { GET_CART_QUANTITY } from '../../graphql/query/productQuery';
+import { useMutation, useQuery } from '@apollo/client';
+import { CustomerContext } from '../../App';
+import { set } from 'react-hook-form';
+// import { SET_SEARCHED_PRODUCT } from '../../graphql/mutation/customerMutation';
 
 export default function Navbar() {
     const [userId, setUserId] = useState(true);
     const [showLoginAlert, setShowLoginAlert] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const navigate = useNavigate();
+    const {quantity,setQuantity} = useContext(CustomerContext)
 
 
     // useEffect(() => {
@@ -22,11 +28,22 @@ export default function Navbar() {
     //     setUserId(storedUserId);
     // }, []);
 
+      const { data, loading, error } = useQuery(GET_CART_QUANTITY, { fetchPolicy: "no-cache" });
+      useEffect(()=>{
+        if(data?.getCartQuantity){
+            setQuantity(data?.getCartQuantity);
+        }
+      },[data?.getCartQuantity])
+      console.log("csrt fdgfhj", data?.getCartQuantity);
+      
+    //   const [saveSearch]  = useMutation(SET_SEARCHED_PRODUCT);
+     
+
     useEffect(() => {
         if (searchTerm && searchTerm.trim() !== "") {
             navigate(`/products?search=${encodeURIComponent(searchTerm.trim())}`);
         }
-    }, [searchTerm]); // Ensure navigate is included in dependencies
+    }, [searchTerm]); 
 
 
     const gotocart = () => {
@@ -37,7 +54,6 @@ export default function Navbar() {
     }
     const CustomerLogin = () => {
         console.log("moving to login");
-
         navigate("login")
     }
     const moveTohome = () => {
@@ -82,7 +98,7 @@ export default function Navbar() {
                     <div className="position-relative">
                         <FaShoppingCart className="fs-3 text-dark" style={{ cursor: "pointer" }} onClick={() => gotocart()} />
                         <span className="position-absolute top-0 start-80 translate-middle badge rounded-pill bg-danger text-white">
-                            10
+                            {quantity}
                         </span>
                     </div>
 

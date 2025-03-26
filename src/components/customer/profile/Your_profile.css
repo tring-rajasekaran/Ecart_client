@@ -27,3 +27,12 @@ img {
   display: block;
   width: 100%;
 }
+
+
+
+/* merchantnewproduct */
+
+
+.no-resize {
+  resize: none;
+}

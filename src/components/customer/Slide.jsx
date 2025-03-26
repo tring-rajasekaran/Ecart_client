@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import Carousel from 'react-bootstrap/Carousel';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
@@ -6,14 +6,18 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import { BsCurrencyRupee } from "react-icons/bs";
 import { RANDOM_PRODUCT } from '../../graphql/query/productQuery';
-import { useQuery } from '@apollo/client';
+import { useMutation, useQuery } from '@apollo/client';
 import { useEffect, useState } from 'react';
+import { ADD_TO_CART } from '../../graphql/mutation/customerMutation';
+import { CustomerContext } from '../../App';
 
 
 export default function Slide() {
 
   const [products, setProducts] = useState([]);
   const { data, loading, error } = useQuery(RANDOM_PRODUCT);
+  const [addToCart] = useMutation(ADD_TO_CART, {fetchPolicy:"no-cache"});
+  const {quantity,setQuantity} = useContext(CustomerContext);
 
   console.log(data, "responce");
   useEffect(() => {
@@ -26,7 +30,34 @@ export default function Slide() {
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error fetching products</p>;
+  // console.log(products[1].product_id, "id ");
 
+  const AddtoCart = async (id) => {
+    try {
+      console.log(id, "particular id");
+  
+      const { data } = await addToCart({ variables: { product_id: id } });
+  
+      if (data?.addToCart) {
+        const message = data.addToCart;
+
+        if (message === "product is already in the cart") {
+          alert(" This product is already in your cart!");
+        } else if (message === "product added successfully") {
+          setQuantity(quantity+1);
+          alert(" Product added to cart successfully!");
+        } else if (message === "Failed to add product to cart") {
+          alert(" Something went wrong! Failed to add product.");
+        } else {
+          alert( message); 
+        }
+      }
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      alert("Something went wrong! Please try again.");
+    }
+  };
+  
 
 
   return (
@@ -67,7 +98,7 @@ export default function Slide() {
             <Card.Img
               variant="top"
               src={product.image || "https://via.placeholder.com/300x220"}
-              style={{ height: "220px", objectFit: "cover" ,padding:"10px" , }}
+              style={{ height: "220px", objectFit: "contain", padding: "20px", }}
             />
             <Card.Body className="d-flex flex-column">
               <Card.Title>{product.product_name}</Card.Title>
@@ -75,16 +106,17 @@ export default function Slide() {
               <Card.Text
                 className="flex-grow-1 text-muted p-1"
                 style={{
-                  maxHeight: "70px",  
-                  overflowY: "auto", 
+                  maxHeight: "70px",
+                  overflowY: "auto",
                   textOverflow: "ellipsis",
-                  whiteSpace: "normal"  
+                  whiteSpace: "normal"
                 }}>
                 {product.description}
               </Card.Text>
 
               <p>Price: <span className='text-success fw-bold'><BsCurrencyRupee className='mb-1 fw-bold' />{product.price}</span></p>
-              <Button variant="warning">Add to Cart</Button>
+              <Button
+                variant="warning" onClick={() => AddtoCart(product?.product_id)}>Add to Cart</Button>
             </Card.Body>
           </Card>
         ))}

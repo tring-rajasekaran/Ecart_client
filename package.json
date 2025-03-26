@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@apollo/client": "^3.13.5",
+    "@bytescale/upload-widget-react": "^4.19.0",
     "@fortawesome/fontawesome-free": "^6.7.2",
     "@lottiefiles/dotlottie-react": "^0.13.2",
     "bootstrap": "^5.3.3",

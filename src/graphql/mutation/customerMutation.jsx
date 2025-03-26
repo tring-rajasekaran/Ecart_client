@@ -17,4 +17,20 @@ export const UPDATE_CUSTOMER_DETAILS = gql`
   }
 `;
 
+export const ADD_TO_CART = gql`
+    mutation addToCart($product_id : Int!){
+        addToCart(product_id : $product_id)
+    }
+`
 
+export const REMOVE_FROM_CART = gql`
+  mutation deleteCartProduct($product_id: Int!) {
+    deleteCartProduct(product_id: $product_id)
+  }
+`;
+
+export const SET_SEARCHED_PRODUCT = gql`
+  mutation SaveSearch($searchedProduct: String!) {
+    saveRecentSearch(SearchedProduct: $searchedProduct)
+  }
+`;

@@ -23,3 +23,23 @@ export const SEARCH_PRODUCTS = gql`
     }
   }
 `;
+
+export const GET_CART_PRODUCT = gql`
+  query getCartProducts {
+    getCartProducts {
+      product_id
+      product_name
+      price
+      quantity
+      description
+      image
+    }
+  }
+`;
+
+export const  GET_CART_QUANTITY = gql`
+    query getCartQuantity{
+        getCartQuantity
+    }
+`
+
