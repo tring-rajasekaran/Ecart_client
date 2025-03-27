@@ -26,7 +26,7 @@ export default function Slide() {
     }
   }, [data]);
 
-  console.log(error);
+  // console.log(error);
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error fetching products</p>;

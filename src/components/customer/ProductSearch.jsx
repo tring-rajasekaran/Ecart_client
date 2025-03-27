@@ -11,7 +11,7 @@ import useSearchProducts from "../../hooks/useSearchProducts";
 export default function ProductSearch() {
     const location = useLocation();
     const searchedTerm = new URLSearchParams(location.search).get("search") || "";
-    const { products, loading } = useSearchProducts(searchedTerm, 2000);
+    const { products, loading } = useSearchProducts(searchedTerm, 3000);
 
     // Pagination Setup
     const itemsPerPage = 8;

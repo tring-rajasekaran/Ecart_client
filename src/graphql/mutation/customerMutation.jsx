@@ -29,8 +29,9 @@ export const REMOVE_FROM_CART = gql`
   }
 `;
 
-export const SET_SEARCHED_PRODUCT = gql`
-  mutation SaveSearch($searchedProduct: String!) {
-    saveRecentSearch(SearchedProduct: $searchedProduct)
+export const ADD_TO_ORDER = gql`
+  mutation AddToOrder($orders: [OrderInput!]!) {
+    setOrders(orders: $orders)
   }
 `;
+

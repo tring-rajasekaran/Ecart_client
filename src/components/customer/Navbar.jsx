@@ -2,23 +2,19 @@ import React, { useState, useEffect, useContext } from 'react';
 import { FaUserLarge, FaLocationDot } from "react-icons/fa6";
 import { FaSearch, FaShoppingCart } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
-
-
-
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import { GET_CART_QUANTITY } from '../../graphql/query/productQuery';
+import { GET_CART_QUANTITY, GET_RECENT_SEARCH } from '../../graphql/query/productQuery';
 import { useMutation, useQuery } from '@apollo/client';
 import { CustomerContext } from '../../App';
-import { set } from 'react-hook-form';
-// import { SET_SEARCHED_PRODUCT } from '../../graphql/mutation/customerMutation';
 
 export default function Navbar() {
     const [userId, setUserId] = useState(true);
     const [showLoginAlert, setShowLoginAlert] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const navigate = useNavigate();
-    const {quantity,setQuantity} = useContext(CustomerContext)
-
+    const { quantity, setQuantity } = useContext(CustomerContext)
+    const [searchedTerm, setSearchedTerm] = useState([]);
+    const [showRecent, setShowRecent] = useState(false);
 
     // useEffect(() => {
     //     const storedUserId = localStorage.getItem('user_id');
@@ -28,22 +24,36 @@ export default function Navbar() {
     //     setUserId(storedUserId);
     // }, []);
 
-      const { data, loading, error } = useQuery(GET_CART_QUANTITY, { fetchPolicy: "no-cache" });
-      useEffect(()=>{
-        if(data?.getCartQuantity){
+    const { data, loading, error } = useQuery(GET_CART_QUANTITY, { fetchPolicy: "no-cache" });
+    useEffect(() => {
+        if (data?.getCartQuantity) {
+            // console.log(data?.getCartQuantity +"<<<<<<<<<<<<<<<<");
             setQuantity(data?.getCartQuantity);
         }
-      },[data?.getCartQuantity])
-      console.log("csrt fdgfhj", data?.getCartQuantity);
-      
-    //   const [saveSearch]  = useMutation(SET_SEARCHED_PRODUCT);
-     
+    }, [data?.getCartQuantity])
+
+
+
+    const { data:Searchdata } = useQuery(GET_RECENT_SEARCH, { fetchPolicy: "no-cache" });
+
+    // console.log(Searchdata?.getRecentSearch,"Searchdata");
+    
+    
+    useEffect(() => {
+        if (Searchdata?.getRecentSearch) {
+            // console.log(Searchdata?.getRecentSearch);
+            setSearchedTerm(Searchdata?.getRecentSearch.map(item=>item.searched_product_name));
+        }
+    }, [Searchdata]);
+    // console.log(searchedTerm + " searhed term");
+
+
 
     useEffect(() => {
         if (searchTerm && searchTerm.trim() !== "") {
             navigate(`/products?search=${encodeURIComponent(searchTerm.trim())}`);
         }
-    }, [searchTerm]); 
+    }, [searchTerm]);
 
 
     const gotocart = () => {
@@ -85,10 +95,23 @@ export default function Navbar() {
                                 type="search"
                                 placeholder="Search Products"
                                 aria-label="Search"
-                                value={searchTerm} // Ensure the value stays after pressing Enter
+                                value={searchTerm} 
                                 onChange={(e) => setSearchTerm(e.target.value)}
+                                onFocus={()=>setShowRecent(true)}
+                                onBlur={()=>setTimeout(() => {
+                                    setShowRecent(false)
+                                },200)}
                             />
                             <FaSearch className="px-2 text-warning" style={{ fontSize: "35px" }} />
+                            {showRecent && searchedTerm.length>0 &&(
+                                <ul className="list-group position-absolute shadow" style={{ zIndex: 10,marginTop:"245px ",width:"390px"}}>
+                                    {searchedTerm.map((term , index)=>(
+                                        <li key={index} className='list-group-item list-group-item-action' onMouseDown={() => setSearchTerm(term)} >
+                                            {term}
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
                         </div>
                     </form>
 

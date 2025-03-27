@@ -24,9 +24,9 @@ export default function Profile() {
   useEffect(() => {
     if (data && data.getCustomerDetails?.length > 0) {
       setFormData({
-        name: data.getCustomerDetails[0].name || "",
-        email: data.getCustomerDetails[0].email || "",
-        address: data.getCustomerDetails[0].address || "",
+        name: data.getCustomerDetails[0].name || "Name",
+        email: data.getCustomerDetails[0].email || "Email (Cannot Be changed)",
+        address: data.getCustomerDetails[0].address || "Address",
       });
     }
   }, [data]);

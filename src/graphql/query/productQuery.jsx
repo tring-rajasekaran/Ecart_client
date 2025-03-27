@@ -33,6 +33,7 @@ export const GET_CART_PRODUCT = gql`
       quantity
       description
       image
+      quantity
     }
   }
 `;
@@ -43,3 +44,23 @@ export const  GET_CART_QUANTITY = gql`
     }
 `
 
+export const GET_RECENT_SEARCH = gql`
+    query getRecentSearch{
+        getRecentSearch{
+            searched_product_name
+        }
+    }
+`
+export const GET_ORDERED_PRODUCT = gql`
+    query {
+      getOrdersProduct {
+        product_id
+        quantity
+        product_name
+        description
+        price
+        merchant_id
+        customer_name
+  }
+}
+`
