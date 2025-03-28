@@ -59,8 +59,8 @@ export default function Orders() {
                                         <div className="col-md-4 d-flex">
                                             <img
                                                 src={order.image || "https://via.placeholder.com/150"}
-                                                className="img-fluid border border-dark rounded w-100"
-                                                style={{ height: "200px", objectFit: "cover" }}
+                                                className="img-fluid w-100"
+                                                style={{ height: "200px", objectFit: "contain" }}
                                                 alt="Product"
                                             />
                                         </div>
@@ -75,9 +75,8 @@ export default function Orders() {
                                                 <h5 className="text-success fw-bold">
                                                     <BsCurrencyRupee className='mb-1' />{order.price}
                                                 </h5>
-                                                <p className="mb-0">Quantity: {order.quantity}</p>
                                                 <div className='d-flex justify-content-between w-100 align-items-center'>
-                                                    <button className="btn btn-warning mt-2">Order Again</button>
+                                                    <span className="p-2 rounded bg-warning mt-2"> <p className="mb-0">Quantity: {order.quantity}</p></span>
                                                 </div>
                                             </div>
                                         </div>

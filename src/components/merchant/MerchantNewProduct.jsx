@@ -4,6 +4,8 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { FaArrowLeft } from "react-icons/fa";
 import "../customer/profile/Your_profile.css";
 import { UploadButton } from "@bytescale/upload-widget-react";
+import { ADD_PRODUCT } from "../../graphql/mutation/merchantMutation";
+import { useMutation } from "@apollo/client";
 
 
 
@@ -15,15 +17,36 @@ export default function MerchantNewProduct() {
     } = useForm();
 
     const [imagePreview, setImagePreview] = useState(null);
-    const [imageUrl, setImageUrl] = useState("");
 
-    const onSubmit = (data) => {
-        if (!imageUrl) {
+    const [addProduct]= useMutation(ADD_PRODUCT ,{fetchPolicy :"no-cache"});
+
+
+    const onSubmit = async (data) => {
+        const productData = { ...data, image: imagePreview };
+        console.log(productData);
+        
+        if (!imagePreview) {
             alert("Please wait until the image is uploaded.");
-            return;
         }
-        const productData = { ...data, image: imageUrl };
+
+        try{
+            const{data} = await addProduct({
+                variables :{
+                    input:{
+                        description : productData.description,
+                        image : productData.image,
+                        price :parseInt( productData.price),
+                        product_id : productData.product_id,
+                        product_name : productData.productName
+                    }
+                }
+            })
+        }
+        catch(err){
+            console.log(err.message);
+        }
         console.log("Product Data:", productData);
+
         alert("Product added successfully!");
     };
 

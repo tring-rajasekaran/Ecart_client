@@ -26,7 +26,7 @@ export default function Profile() {
       setFormData({
         name: data.getCustomerDetails[0].name || "Name",
         email: data.getCustomerDetails[0].email || "Email (Cannot Be changed)",
-        address: data.getCustomerDetails[0].address || "Address",
+        address: data.getCustomerDetails[0].address || "Add your Delivery Address By clicking Edit Button ⬇️",
       });
     }
   }, [data]);
@@ -40,14 +40,13 @@ export default function Profile() {
   };
 
   useEffect(() => {
-    console.log(formData.address + formData.name + " address ");
+    console.log(+ formData.name + " address ");
   }, [formData.address]);
 
   const handleSave = async () => {
     try {
       await updateCustomerDetails({
         variables: {
-          id: 2,
           name: formData.name,
           address: formData.address,
         },

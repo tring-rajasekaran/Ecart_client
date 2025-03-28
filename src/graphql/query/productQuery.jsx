@@ -61,6 +61,9 @@ export const GET_ORDERED_PRODUCT = gql`
         price
         merchant_id
         customer_name
+        image
   }
 }
 `
+
+
