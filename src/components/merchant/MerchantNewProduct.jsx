@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm  } from "react-hook-form";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaArrowLeft } from "react-icons/fa";
 import "../customer/profile/Your_profile.css";
@@ -8,12 +8,12 @@ import { ADD_PRODUCT } from "../../graphql/mutation/merchantMutation";
 import { useMutation } from "@apollo/client";
 
 
-
 export default function MerchantNewProduct() {
     const {
         register,
         handleSubmit,
         formState: { errors },
+        reset,
     } = useForm();
 
     const [imagePreview, setImagePreview] = useState(null);
@@ -46,8 +46,10 @@ export default function MerchantNewProduct() {
             console.log(err.message);
         }
         console.log("Product Data:", productData);
-
         alert("Product added successfully!");
+        reset();
+        setImagePreview(null)
+
     };
 
     const handleImg=(files)=>{

@@ -6,6 +6,9 @@ import { GET_CART_PRODUCT } from "../../graphql/query/productQuery";
 import { ADD_TO_ORDER, REMOVE_FROM_CART } from "../../graphql/mutation/customerMutation";
 import { useQuery, useMutation } from "@apollo/client";
 import { CustomerContext } from "../../App";
+import { toast } from "react-hot-toast";
+import { MdRemoveShoppingCart } from "react-icons/md";
+
 
 export default function Cart() {
     const { data, loading, error } = useQuery(GET_CART_PRODUCT, { fetchPolicy: "no-cache" });
@@ -14,6 +17,7 @@ export default function Cart() {
     const [selectedProducts, setSelectedProducts] = useState([]);
 
     const [orderedProduct , setOrderProduct] = useState([])
+    const [terms , setTerms] = useState(false);
 
     const [deleteCartProduct] = useMutation(REMOVE_FROM_CART, { fetchPolicy: "no-cache" });
 
@@ -36,6 +40,8 @@ export default function Cart() {
             setCartProducts((prev) => prev.filter((product) => product.product_id !== id));
             setSelectedProducts((prev) => prev.filter((productId) => productId !== id));
             setQuantity(quantity - 1);
+            toast.success("Removed from cart!")
+
         } catch (error) {
             console.error("Error deleting product:", error);
         }
@@ -83,7 +89,7 @@ export default function Cart() {
       const confirmOrder = async () => {
         try {
           await setOrder({ variables: { orders: orderData } }); 
-          alert("Order placed successfully!");
+          toast.success("Order placed successfully!");
         } catch (error) {
           console.error("Order Error:", error);
         }
@@ -93,7 +99,20 @@ export default function Cart() {
 
     console.log(typeof(JSON.stringify(orderData)) + " orderdata"); 
     
-
+    const Terms=(event)=>{
+        setTerms(event.target.checked);
+        if(!terms){
+            toast(
+                "⚠️Once You placed Order it cannot be canceled, \n\n So please check Twice before ordering products",
+                {
+                  duration: 7000,
+                  position: "top-center",
+                }
+              );
+        }
+    }
+    console.log(terms +" initial ");
+    
 
     return (
         <>
@@ -104,8 +123,8 @@ export default function Cart() {
                     </h3>
                 </div>
 
-                <div className="bg-light w-100 h-100 d-flex" style={{ background: "#E7E9EB" }}>
-                    <div className="w-75 vh-50 border-end border-dark bg-light overflow-auto" style={{ maxHeight: "450px" }}>
+                <div className="w-100 h-100 d-flex" >
+                    <div className="w-75 vh-50 border-end border-dark overflow-auto" style={{ maxHeight: "450px" }}>
                         <div className="container mt-4">
                             {cartProducts.length > 0 ? (
                                 cartProducts.map((product) => (
@@ -162,7 +181,7 @@ export default function Cart() {
                                     </div>
                                 ))
                             ) : (
-                                <p className="text-center align-items-center">Your cart is empty.</p>
+                                <p className="text-center align-items-center fw-bold fs-4" >Your cart is empty . <MdRemoveShoppingCart className="fs-3" /></p>
                             )}
                         </div>
                     </div>
@@ -174,10 +193,10 @@ export default function Cart() {
                                 </h5>
                             </div>
                             <div className="d-flex align-items-center ms-5">
-                                <input type="checkbox" className="me-2" style={{ transform: "translateY(1px)" }} />
-                                <p className="m-0">Pack this item as Gift</p>
+                                <input type="checkbox" className="me-2" onChange={Terms} style={{ transform: "translateY(1px)" }} />
+                                <p className="m-0">Terms and Condition</p>
                             </div>
-                            <button className="ms-5 mt-3 btn bg-success text-white rounded-pill px-4 py-2" onClick={()=>confirmOrder()}>
+                            <button className="ms-5 mt-3 btn bg-success text-white rounded-pill px-4 py-2" onClick={()=>confirmOrder()} disabled={!terms} >
                                 Proceed to Buy
                             </button>
                         </div>

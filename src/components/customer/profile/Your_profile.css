@@ -6,26 +6,15 @@ img {
 
 /* for navbar */
 
-/* Common dropdown button styling */
+
 .dropdown-btn {
+
   width: 100%;
-  border: none;
+  border: 20px;
   text-align: left;
-  padding: 5px 10px;
+  padding: 5px 5px;
   font-size: 16px;
-  /* color: #333; */
   cursor: pointer;
-}
-
-.dropdown-btn:hover {
-  background-color: #FFC107;
-}
-
-.dropdown-btn a {
-  text-decoration: none;
-  color: inherit;
-  display: block;
-  width: 100%;
 }
 
 

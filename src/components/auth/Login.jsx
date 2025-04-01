@@ -1,25 +1,34 @@
-import React, { useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import CommonLogin from "../common/CommonLogin";
 import { useMutation, useQuery } from "@apollo/client";
 import { LOGIN_USER } from "../../graphql/mutation/customerMutation";
+import CryptoJS from "crypto-js";
+import { CustomerContext } from "../../App";
 
 export default function Login() {
   const navigate = useNavigate();
   const [loginUser, { data, error, loading }] = useMutation(LOGIN_USER, {
     fetchPolicy: "no-cache"
   });
+  const {setIsLogin}=useContext(CustomerContext)
+ 
+  const secretKey = "Rajasekaran3300";
+
 
   const handleLogin = async (userdata) => {
+        const encryptedPassword = CryptoJS.AES.encrypt(userdata.password, secretKey).toString();
+    
     try {
       await loginUser({
         variables: {
           email: userdata.email,
-          password: userdata.password,
+          password: encryptedPassword,
         }
       });
 
       console.log("User logged in successfully");
+      setIsLogin(true)
       navigate("/slide"); 
 
     } catch (err) {

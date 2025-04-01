@@ -17,3 +17,15 @@ export const ADD_PRODUCT =gql`
         addMerchantProduct(input : $input)
     }
 `
+
+export const DELETE_PRODUCT = gql`
+    mutation deleteMerchantProduct($product_id : Int!){
+        deleteMerchantProduct(product_id : $product_id)
+    }
+`
+
+export const LOG_OUT = gql`
+    mutation logout{
+        logout
+    }
+`

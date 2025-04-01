@@ -19,6 +19,7 @@ export default function Router() {
   return (
     <Routes>
         <Route path='/' element={<App/>}>
+            <Route path='' element={<Slide/>}/>
             <Route path='login' element={<Login/>}/>
             <Route path='register' element={<Register/>}/>
             <Route path='slide' element={<Slide/>}/>

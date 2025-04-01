@@ -6,18 +6,17 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import { BsCurrencyRupee } from "react-icons/bs";
 import { RANDOM_PRODUCT } from '../../graphql/query/productQuery';
-import { useMutation, useQuery } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { useEffect, useState } from 'react';
-import { ADD_TO_CART } from '../../graphql/mutation/customerMutation';
-import { CustomerContext } from '../../App';
-
+import { toast } from "react-hot-toast";
+import useAddToCart from '../common/useAddtoCart';
 
 export default function Slide() {
 
+  const { addToCartHandler } = useAddToCart();
+
   const [products, setProducts] = useState([]);
   const { data, loading, error } = useQuery(RANDOM_PRODUCT);
-  const [addToCart] = useMutation(ADD_TO_CART, {fetchPolicy:"no-cache"});
-  const {quantity,setQuantity} = useContext(CustomerContext);
 
   console.log(data, "responce");
   useEffect(() => {
@@ -31,35 +30,6 @@ export default function Slide() {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error fetching products</p>;
   // console.log(products[1].product_id, "id ");
-
-  const AddtoCart = async (id) => {
-    try {
-      console.log(id, "particular id");
-  
-      const { data } = await addToCart({ variables: { product_id: id } });
-  
-      if (data?.addToCart) {
-        const message = data.addToCart;
-
-        if (message === "product is already in the cart") {
-          alert(" This product is already in your cart!");
-        } else if (message === "product added successfully") {
-          setQuantity(quantity+1);
-          alert(" Product added to cart successfully!");
-        } else if (message === "Failed to add product to cart") {
-          alert(" Something went wrong! Failed to add product.");
-        } else {
-          alert( message); 
-        }
-      }
-    } catch (error) {
-      console.error("Error adding to cart:", error);
-      alert("Something went wrong! Please try again.");
-    }
-  };
-  
-
-
   return (
     <>
       <div className=" px-2 mt-4 w-100 ">
@@ -116,7 +86,7 @@ export default function Slide() {
 
               <p>Price: <span className='text-success fw-bold'><BsCurrencyRupee className='mb-1 fw-bold' />{product.price}</span></p>
               <Button
-                variant="warning" onClick={() => AddtoCart(product?.product_id)}>Add to Cart</Button>
+                variant="warning" onClick={() => addToCartHandler(product?.product_id)}>Add to Cart</Button>
             </Card.Body>
           </Card>
         ))}

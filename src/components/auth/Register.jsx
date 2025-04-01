@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import CommonRegister from "../common/CommonRegister";
 import { useMutation } from "@apollo/client";
 import { CREATE_CUSTOMER } from "../../graphql/mutation/customerMutation";
+import { EncryptPassword } from "../EncryptPassword";
+import CryptoJS from "crypto-js";
 
 export default function Register() {
   const navigate = useNavigate();
@@ -10,13 +12,19 @@ export default function Register() {
     fetchPolicy: "no-cache"
   });
 
+  
+  const secretKey = "Rajasekaran3300";
+  
   const handleRegister = async (userdata) => {
+    const encryptedPassword = CryptoJS.AES.encrypt(userdata.password, secretKey).toString();
+    console.log(encryptedPassword +" ecy password");
+    
     try {
       await createCustomer({
         variables: {
           name: userdata.name,
           email: userdata.email,
-          password: userdata.password,
+          password: encryptedPassword,
           register_type:null
         }
       });

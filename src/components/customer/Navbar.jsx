@@ -1,48 +1,54 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { FaUserLarge, FaLocationDot } from "react-icons/fa6";
 import { FaSearch, FaShoppingCart } from "react-icons/fa";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import '@fortawesome/fontawesome-free/css/all.min.css';
 import { GET_CART_QUANTITY, GET_RECENT_SEARCH } from '../../graphql/query/productQuery';
 import { useMutation, useQuery } from '@apollo/client';
 import { CustomerContext } from '../../App';
+import LogoutModal from './LogoutModal'
+import Cookies from 'js-cookie';
+import Location from './Location';
+import { LOG_OUT } from '../../graphql/mutation/merchantMutation';
+import toast from 'react-hot-toast';
+
 
 export default function Navbar() {
     const [userId, setUserId] = useState(true);
     const [showLoginAlert, setShowLoginAlert] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
-    const navigate = useNavigate();
-    const { quantity, setQuantity } = useContext(CustomerContext)
+    const { quantity, setQuantity, isLogin,setIsLogin} = useContext(CustomerContext)
     const [searchedTerm, setSearchedTerm] = useState([]);
     const [showRecent, setShowRecent] = useState(false);
+    const [logoutPopup, setLogoutPopup] = useState(false);
 
-    // useEffect(() => {
-    //     const storedUserId = localStorage.getItem('user_id');
-    //     if (!storedUserId) {
-    //         setShowLoginAlert(true);
-    //     }
-    //     setUserId(storedUserId);
-    // }, []);
+    const [address, setAddress] = useState("");
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState("");
+    const[locationPopup ,setLocationPopup] = useState(false);
+    const navigate=useNavigate()
 
-    const { data, loading, error } = useQuery(GET_CART_QUANTITY, { fetchPolicy: "no-cache" });
+    const [logoutmutation]=useMutation(LOG_OUT)
+
+
+    const { data } = useQuery(GET_CART_QUANTITY, { fetchPolicy: "no-cache" });
     useEffect(() => {
         if (data?.getCartQuantity) {
-            // console.log(data?.getCartQuantity +"<<<<<<<<<<<<<<<<");
             setQuantity(data?.getCartQuantity);
         }
     }, [data?.getCartQuantity])
 
 
 
-    const { data:Searchdata } = useQuery(GET_RECENT_SEARCH, { fetchPolicy: "no-cache" });
+    const { data: Searchdata } = useQuery(GET_RECENT_SEARCH, { fetchPolicy: "no-cache" });
 
     // console.log(Searchdata?.getRecentSearch,"Searchdata");
-    
-    
+
+
     useEffect(() => {
         if (Searchdata?.getRecentSearch) {
             // console.log(Searchdata?.getRecentSearch);
-            setSearchedTerm(Searchdata?.getRecentSearch.map(item=>item.searched_product_name));
+            setSearchedTerm(Searchdata?.getRecentSearch.map(item => item.searched_product_name));
         }
     }, [Searchdata]);
     // console.log(searchedTerm + " searhed term");
@@ -59,16 +65,58 @@ export default function Navbar() {
     const gotocart = () => {
         navigate("/cart")
     }
-    const MerchantLogin = () => {
-        navigate(`/MerchantLogin?type=Merchant`)
-    }
-    const CustomerLogin = () => {
-        console.log("moving to login");
-        navigate("login")
-    }
     const moveTohome = () => {
         navigate("/slide")
     }
+    const logout = () => {
+        console.log("logout >>>>>>>>>>>>>>>>>>");
+        setLogoutPopup(true);
+    }
+    const handlelogoutClose = () => setLogoutPopup(false);
+    const handlelogout =async () => {
+        const {data:logout}=await logoutmutation()
+        toast.success(logout?.logout)
+        setLogoutPopup(false)
+        setQuantity(0)
+        setIsLogin(false)
+        navigate("/login")
+    }
+
+    useEffect(() => {
+        if ("geolocation" in navigator) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lon = position.coords.longitude;
+
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`)
+                        .then((response) => response.json())
+                        .then((data) => {
+                            setAddress(data.display_name);
+                            setLoading(false);
+                        })
+                        .catch((error) => {
+                            setError("Error fetching address");
+                            setLoading(false);
+                        });
+                },
+                (error) => {
+                    setError("Error getting location");
+                    setLoading(false);
+                }
+            );
+        } else {
+            setError("Geolocation is not available");
+            setLoading(false);
+        }
+    }, []);
+    const ShowLocation = () => {
+        setLocationPopup(true);
+    }
+    const handleLocationPopup =()=>{
+        setLocationPopup(false);
+    }
+    console.log(address + " address");
 
     return (
         <>
@@ -82,7 +130,7 @@ export default function Navbar() {
             <nav className="navbar navbar-expand bg-warning w-100 d-flex justify-content-between px-4">
                 <div className='d-flex align-items-center'>
                     <h5 className="navbar-brand" style={{ cursor: "pointer" }} onClick={() => moveTohome()}>E-cart</h5>
-                    <div className='d-flex align-items-center gap-2 ms-3'>
+                    <div className='d-flex align-items-center gap-2 ms-3' style={{ cursor: "pointer" }} onClick={() => ShowLocation()}>
                         <FaLocationDot className='mb-1' />
                         <h5 className='mb-1'>Chennai</h5>
                     </div>
@@ -95,17 +143,17 @@ export default function Navbar() {
                                 type="search"
                                 placeholder="Search Products"
                                 aria-label="Search"
-                                value={searchTerm} 
+                                value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
-                                onFocus={()=>setShowRecent(true)}
-                                onBlur={()=>setTimeout(() => {
+                                onFocus={() => setShowRecent(true)}
+                                onBlur={() => setTimeout(() => {
                                     setShowRecent(false)
-                                },200)}
+                                }, 2000)}
                             />
                             <FaSearch className="px-2 text-warning" style={{ fontSize: "35px" }} />
-                            {showRecent && searchedTerm.length>0 &&(
-                                <ul className="list-group position-absolute shadow" style={{ zIndex: 10,marginTop:"245px ",width:"390px"}}>
-                                    {searchedTerm.map((term , index)=>(
+                            {showRecent && searchedTerm.length > 0 && (
+                                <ul className="list-group position-absolute shadow" style={{ zIndex: 10, marginTop: "245px ", width: "390px" }}>
+                                    {searchedTerm.map((term, index) => (
                                         <li key={index} className='list-group-item list-group-item-action' onMouseDown={() => setSearchTerm(term)} >
                                             {term}
                                         </li>
@@ -131,10 +179,10 @@ export default function Navbar() {
                             <FaUserLarge />
                         </button>
                         <ul className="dropdown-menu dropdown-menu-end mt-2 border border-none">
-                            {userId ? (
+                            {isLogin ? (
                                 <>
                                     <button className="dropdown-btn">
-                                        <a className="dropdown-item" href="/MerchantLogin">Enter as Merchant</a>
+                                        <a className="dropdown-item" href="/MerchantLogin?type=Merchant">Enter as Merchant</a>
                                     </button>
                                     <button className="dropdown-btn">
                                         <a className="dropdown-item" href="/orders">Orders</a>
@@ -143,21 +191,39 @@ export default function Navbar() {
                                         <a className="dropdown-item" href="/profile">Your Profile</a>
                                     </button>
                                     <button className="dropdown-btn">
-                                        <a className="dropdown-item" href="#">Logout</a>
+                                        <a className="dropdown-item" onClick={() => logout()}>Logout</a>
                                     </button>
                                 </>
                             ) : (
-                                // <Fragment className="align-items-start d-flex flex-start">
-                                // <button className="dropdown-item text-success fw-bold text-center" onClick={()=>CustomerLogin()} >Login </button>
-                                // <button className="dropdown-item text-success fw-bold text-center" onClick={()=>MerchantLogin()}>Login as Merchant</button>
-                                // </Fragment>
                                 <>
+                                <div className="align-items-start d-flex flex-start">
+                                <button className="dropdown-item text-success fw-bold text-center" onClick={()=>CustomerLogin()} >Login </button>
+                                <button className="dropdown-item text-success fw-bold text-center" onClick={()=>MerchantLogin()}>Login as Merchant</button>
+                                </div>
                                 </>
                             )}
                         </ul>
                     </div>
                 </div>
             </nav>
+
+            {logoutPopup &&
+                <>
+                    <LogoutModal
+                        show={true}
+                        handleClose={handlelogoutClose}
+                        handleLogout={handlelogout}
+                    />
+                </>
+            }
+
+            { locationPopup && 
+                <Location
+                    show={true}
+                    handleClose={handleLocationPopup}
+                    address={address}
+                />
+            }
         </>
     );
 }

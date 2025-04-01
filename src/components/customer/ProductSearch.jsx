@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import Card from "react-bootstrap/Card";
 import { BsCurrencyRupee } from "react-icons/bs";
 import Button from "react-bootstrap/Button";
@@ -7,13 +7,15 @@ import Row from "react-bootstrap/Row";
 import Col from "react-bootstrap/Col";
 import { useLocation } from "react-router-dom";
 import useSearchProducts from "../../hooks/useSearchProducts";
+import toast from "react-hot-toast";
+import useAddToCart from '../common/useAddtoCart';
+
 
 export default function ProductSearch() {
     const location = useLocation();
     const searchedTerm = new URLSearchParams(location.search).get("search") || "";
     const { products, loading } = useSearchProducts(searchedTerm, 3000);
 
-    // Pagination Setup
     const itemsPerPage = 8;
     const [currentPage, setCurrentPage] = useState(1);
     const totalPages = Math.ceil(products.length / itemsPerPage);
@@ -21,6 +23,8 @@ export default function ProductSearch() {
     const indexOfLastProduct = currentPage * itemsPerPage;
     const indexOfFirstProduct = indexOfLastProduct - itemsPerPage;
     const currentProducts = products.slice(indexOfFirstProduct, indexOfLastProduct);
+
+    const { addToCartHandler } = useAddToCart();
 
     return (
         <Container className="p-3 text-center">
@@ -58,7 +62,7 @@ export default function ProductSearch() {
                                                 {product.price}
                                             </span>
                                         </p>
-                                        <Button variant="warning">Add to Cart</Button>
+                                        <Button variant="warning" onClick={()=>addToCartHandler(product?.product_id)}>Add to Cart</Button>
                                     </Card.Body>
                                 </Card>
                             </Col>

@@ -4,7 +4,7 @@ import { useMutation } from "@apollo/client";
 import { CREATE_CUSTOMER } from "../../graphql/mutation/customerMutation";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-
+import { toast } from "react-hot-toast";
 
 
 export default function MerchantRegister() {
@@ -27,9 +27,9 @@ export default function MerchantRegister() {
             register_type : register_type
           }
         });
-  
+        toast.success("User registered successfully")
         console.log("User registered successfully");
-        navigate("/login"); 
+        navigate("/MerchantLogin"); 
   
       } catch (err) {
         console.error("Registration error:", err.message);

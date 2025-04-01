@@ -12,16 +12,35 @@ export default function Orders() {
     console.log(data, " responce");
 
     useEffect(() => {
+
+
         if (data && data.getOrdersProduct) {
             console.log(data.getOrdersProduct, " ordered product ");
             setOrderProduct(data.getOrdersProduct);
         }
     }, [data]);
-
+    getData();
     console.log(orderedProduct, " ordered ");
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error fetching Ordered Product</p>;
+
+
+    async function getData() {
+        const url = "https://api.sampleapis.com/coffee/hot";
+        try {
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`Response status: ${response.status}`);
+            }
+
+            const json = await response.json();
+            console.log(json);
+        } catch (error) {
+            console.error(error.message);
+        }
+    }
+
 
     return (
         <>
@@ -31,6 +50,7 @@ export default function Orders() {
                         <a href="/profile" className="text-decoration-underline text-dark">Your Account</a>
                         <span className="text-warning"> &gt; Your Orders</span>
                     </p>
+                    {/* <p>{json}</p> */}
                 </div>
                 <div className='p-1 ms-5'>
                     <h3>Your Orders :</h3>
@@ -42,7 +62,7 @@ export default function Orders() {
                         {orderedProduct.length > 0 ? (
                             orderedProduct.map((order, index) => (
                                 <div key={index} className='border border-secondary rounded h-50 w-80 ms-5 mb-4'>
-                                    <div className='w-100 px-2 rounded' style={{ backgroundColor: "#F0F2F2" }}>
+                                    <div className='w-100 px-2 rounded d-flex justify-content-between' style={{ backgroundColor: "#F0F2F2" }}>
                                         <div className='w-50 h-25 d-flex flex-row justify-content-between align-items-center'>
                                             <p className='text-success fw-bold mt-3'>ORDER PLACED</p>
                                             <div className='d-flex flex-column'>
@@ -53,6 +73,16 @@ export default function Orders() {
                                                 <p className="mb-0">SHIPPED TO:</p>
                                                 <p className="mb-0">{order.customer_name}</p>
                                             </div>
+                                        </div>
+                                        <div className='align-items-center gap-3 d-flex justify-content-center mt-2'>
+                                            <p className='fw-bold'>
+                                                ORDER STATUS : {" "}
+                                                <span 
+                                                    className={`border border-none rounded p-2 ${order.order_status === "accepted" ? "bg-success text-light": order.order_status === "rejected"? "bg-danger text-light": "bg-warning text-dark" }`}>
+                                                    {order.order_status}
+                                                </span>
+                                            </p>
+
                                         </div>
                                     </div>
                                     <div className="row g-0 align-items-center p-2">

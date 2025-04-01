@@ -62,6 +62,7 @@ export const GET_ORDERED_PRODUCT = gql`
         merchant_id
         customer_name
         image
+        order_status
   }
 }
 `
