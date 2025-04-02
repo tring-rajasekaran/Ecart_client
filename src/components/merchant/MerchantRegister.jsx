@@ -41,7 +41,7 @@ export default function MerchantRegister() {
         console.error("Error:", error?.register);
         if (error.message.includes("User already found")) {
           console.log("User already exists, redirecting to login...");
-          navigate("/login");
+          navigate("/MerchantLogin?type=Merchant");
         }
       }
     }, [error]);

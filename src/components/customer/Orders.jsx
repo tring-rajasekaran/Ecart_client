@@ -7,7 +7,7 @@ import { GET_ORDERED_PRODUCT } from '../../graphql/query/productQuery';
 export default function Orders() {
     const [orderedProduct, setOrderProduct] = useState([]);
 
-    const { data, loading, error } = useQuery(GET_ORDERED_PRODUCT);
+    const { data, loading, error } = useQuery(GET_ORDERED_PRODUCT,{fetchPolicy:"no-cache"});
 
     console.log(data, " responce");
 
@@ -19,27 +19,10 @@ export default function Orders() {
             setOrderProduct(data.getOrdersProduct);
         }
     }, [data]);
-    getData();
     console.log(orderedProduct, " ordered ");
 
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error fetching Ordered Product</p>;
-
-
-    async function getData() {
-        const url = "https://api.sampleapis.com/coffee/hot";
-        try {
-            const response = await fetch(url);
-            if (!response.ok) {
-                throw new Error(`Response status: ${response.status}`);
-            }
-
-            const json = await response.json();
-            console.log(json);
-        } catch (error) {
-            console.error(error.message);
-        }
-    }
 
 
     return (

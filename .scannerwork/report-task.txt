@@ -1,0 +1,6 @@
+projectKey=E_CART
+serverUrl=http://localhost:9000
+serverVersion=25.1.0.102122
+dashboardUrl=http://localhost:9000/dashboard?id=E_CART
+ceTaskId=7ef73bc6-a27d-4968-9155-a9c55f9e1fbb
+ceTaskUrl=http://localhost:9000/api/ce/task?id=7ef73bc6-a27d-4968-9155-a9c55f9e1fbb

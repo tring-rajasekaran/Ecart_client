@@ -3,9 +3,12 @@ import { toast } from 'react-hot-toast';
 import { useMutation } from '@apollo/client';
 import { ADD_TO_CART } from '../../graphql/mutation/customerMutation';
 import { CustomerContext } from '../../App';
+
+
+
 const useAddToCart = () => {
     const [addToCart] = useMutation(ADD_TO_CART, { fetchPolicy: "no-cache" });
-    const {quantity,setQuantity} = useContext(CustomerContext);
+    // const {quantity,setQuantity} = useContext(CustomerContext);
     const addToCartHandler = async (id) => {
         try {
             console.log(id, "particular id");
@@ -21,14 +24,16 @@ const useAddToCart = () => {
                     setQuantity(quantity + 1);
                     toast.success("Product Added to cart Successfully");
                 } else if (message === "Failed to add product to cart") {
-                    toast.error("Something went wrong! Failed to add product.");
+                    toast.error("Please Login for adding cart");
                 } else {
                     toast.error(message);
                 }
             }
         } catch (error) {
             console.error("Error adding to cart:", error);
-            toast.error("Something went wrong! Please try again");
+            toast('Please Login for adding cart', {
+                icon: '⚠️',
+              });
         }
     };
 

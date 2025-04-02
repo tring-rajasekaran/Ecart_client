@@ -5,6 +5,8 @@ import { useMutation } from "@apollo/client";
 import { CREATE_CUSTOMER } from "../../graphql/mutation/customerMutation";
 import { EncryptPassword } from "../EncryptPassword";
 import CryptoJS from "crypto-js";
+import { toast } from "react-hot-toast";
+
 
 export default function Register() {
   const navigate = useNavigate();
@@ -12,11 +14,10 @@ export default function Register() {
     fetchPolicy: "no-cache"
   });
 
-  
-  const secretKey = "Rajasekaran3300";
+
   
   const handleRegister = async (userdata) => {
-    const encryptedPassword = CryptoJS.AES.encrypt(userdata.password, secretKey).toString();
+    const encryptedPassword = EncryptPassword(userdata.password);
     console.log(encryptedPassword +" ecy password");
     
     try {
@@ -28,7 +29,7 @@ export default function Register() {
           register_type:null
         }
       });
-
+      toast.success("User registered successfully")
       console.log("User registered successfully");
       navigate("/login"); 
 
@@ -41,6 +42,7 @@ export default function Register() {
     if (error?.register) {
       console.error("Error:", error?.register);
       if (error.message.includes("User already found")) {
+        toast.error("User already found")
         console.log("User already exists, redirecting to login...");
         navigate("/login");
       }

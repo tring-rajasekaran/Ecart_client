@@ -13,11 +13,11 @@ import { MdRemoveShoppingCart } from "react-icons/md";
 export default function Cart() {
     const { data, loading, error } = useQuery(GET_CART_PRODUCT, { fetchPolicy: "no-cache" });
     const [cartProducts, setCartProducts] = useState([]);
-    const { quantity, setQuantity } = useContext(CustomerContext);
+    const { quantity, setQuantity, jwt } = useContext(CustomerContext);
     const [selectedProducts, setSelectedProducts] = useState([]);
 
-    const [orderedProduct , setOrderProduct] = useState([])
-    const [terms , setTerms] = useState(false);
+    const [orderedProduct, setOrderProduct] = useState([])
+    const [terms, setTerms] = useState(false);
 
     const [deleteCartProduct] = useMutation(REMOVE_FROM_CART, { fetchPolicy: "no-cache" });
 
@@ -28,11 +28,11 @@ export default function Cart() {
         }
     }, [data]);
 
-    console.log(cartProducts  ,+" products");
-    console.log(selectedProducts," selected");
-    
-    
-   
+    console.log(cartProducts, +" products");
+    console.log(selectedProducts, " selected");
+
+
+
 
     const handleDelete = async (id) => {
         try {
@@ -65,54 +65,54 @@ export default function Cart() {
                     ? {
                         ...product,
                         quantity: type === "increase"
-                            ? Math.min(product.quantity + 1, 4) 
-                            : Math.max(product.quantity - 1, 1), 
+                            ? Math.min(product.quantity + 1, 4)
+                            : Math.max(product.quantity - 1, 1),
                     }
                     : product
             )
         );
     };
-    const order=(  product_id ,quantity)=>{
-        console.log("quantity: ",quantity+1);
-        console.log("product_id ",product_id);
-        
-        
+    const order = (product_id, quantity) => {
+        console.log("quantity: ", quantity + 1);
+        console.log("product_id ", product_id);
+
+
     }
 
-    const [setOrder] = useMutation(ADD_TO_ORDER ,{fetchPolicy:"no-cache"});
+    const [setOrder] = useMutation(ADD_TO_ORDER, { fetchPolicy: "no-cache" });
     useEffect(() => {
         setOrderProduct(cartProducts.filter((product) => selectedProducts.includes(product.product_id)));
-      }, [cartProducts, selectedProducts]); 
-    
-      const orderData = orderedProduct.map(({ product_id, quantity }) => ({ product_id, quantity }));
-    
-      const confirmOrder = async () => {
+    }, [cartProducts, selectedProducts]);
+
+    const orderData = orderedProduct.map(({ product_id, quantity }) => ({ product_id, quantity }));
+
+    const confirmOrder = async () => {
         try {
-          await setOrder({ variables: { orders: orderData } }); 
-          toast.success("Order placed successfully!");
+            await setOrder({ variables: { orders: orderData } });
+            toast.success("Order placed successfully!");
         } catch (error) {
-          console.error("Order Error:", error);
+            console.error("Order Error:", error);
         }
-      };
+    };
 
 
 
-    console.log(typeof(JSON.stringify(orderData)) + " orderdata"); 
-    
-    const Terms=(event)=>{
+    console.log(typeof (JSON.stringify(orderData)) + " orderdata");
+
+    const Terms = (event) => {
         setTerms(event.target.checked);
-        if(!terms){
+        if (!terms) {
             toast(
                 "⚠️Once You placed Order it cannot be canceled, \n\n So please check Twice before ordering products",
                 {
-                  duration: 7000,
-                  position: "top-center",
+                    duration: 7000,
+                    position: "top-center",
                 }
-              );
+            );
         }
     }
-    console.log(terms +" initial ");
-    
+    console.log(terms + " initial ");
+
 
     return (
         <>
@@ -155,18 +155,18 @@ export default function Cart() {
                                                     </h5>
                                                     <div className="d-flex justify-content-between w-100 align-items-center">
                                                         <div className="d-flex align-items-center">
-                                                            <button onClick={() => {handleQuantityChange(product.product_id, "decrease") ;order(product.product_id , product.quantity)}} 
+                                                            <button onClick={() => { handleQuantityChange(product.product_id, "decrease"); order(product.product_id, product.quantity) }}
                                                                 className="btn btn-outline-warning"
                                                                 disabled={product.quantity === 1}
-                                                                > -</button>
-                                                            <span className="mx-2"  >{product.quantity } </span>
+                                                            > -</button>
+                                                            <span className="mx-2"  >{product.quantity} </span>
                                                             <button
                                                                 className="btn btn-outline-warning"
-                                                                onClick={() => {handleQuantityChange(product.product_id, "increase") ;order(product.product_id , product.quantity)}} 
+                                                                onClick={() => { handleQuantityChange(product.product_id, "increase"); order(product.product_id, product.quantity) }}
                                                                 disabled={product.quantity === 4}
                                                             > + </button>
-                                                                
-                                                            
+
+
                                                         </div>
                                                         <MdDeleteForever
                                                             className="text-danger"
@@ -181,7 +181,21 @@ export default function Cart() {
                                     </div>
                                 ))
                             ) : (
-                                <p className="text-center align-items-center fw-bold fs-4" >Your cart is empty . <MdRemoveShoppingCart className="fs-3" /></p>
+
+                                <>
+                                    {jwt ? (
+                                        <p className="text-center align-items-center fw-bold fs-4">
+                                            Your cart is empty. <MdRemoveShoppingCart className="fs-3" />
+                                        </p>
+                                    ) : (
+                                        <div className="d-flex justify-content-center fw-bold">
+                                            <p>Please login !</p>
+                                        </div>
+                                    )}
+                                </>
+
+
+
                             )}
                         </div>
                     </div>
@@ -196,7 +210,7 @@ export default function Cart() {
                                 <input type="checkbox" className="me-2" onChange={Terms} style={{ transform: "translateY(1px)" }} />
                                 <p className="m-0">Terms and Condition</p>
                             </div>
-                            <button className="ms-5 mt-3 btn bg-success text-white rounded-pill px-4 py-2" onClick={()=>confirmOrder()} disabled={!terms} >
+                            <button className="ms-5 mt-3 btn bg-success text-white rounded-pill px-4 py-2" onClick={() => confirmOrder()} disabled={!terms} >
                                 Proceed to Buy
                             </button>
                         </div>

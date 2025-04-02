@@ -34,6 +34,14 @@ export default function MerchantOrders() {
             });
             statusofOrder === "accepted" ? toast.success("Order Accepted") : toast.success("Order Rejected")
             console.log("Order status updated: ", res.data.updateMerchantOrder);
+            setProducts((prevProducts) =>
+                prevProducts.map((product) =>
+                    product.product_id === product_id 
+                        ? { ...product, order_status: statusofOrder } 
+                        : product
+                )
+            );
+    
         } catch (err) {
             console.error("Error updating order status:", err);
         }

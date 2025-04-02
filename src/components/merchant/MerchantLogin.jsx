@@ -29,7 +29,7 @@ export default function MerchantLogin() {
         }
       });
       toast.success("logged in successfully")
-      console.log("logged in successfully");
+      console.log("<<<<<<<<<<<<<<<,logged in successfully");
       navigate("/MerchantPage")
 
 

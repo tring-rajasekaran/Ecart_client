@@ -17,7 +17,7 @@ export default function Navbar() {
     const [userId, setUserId] = useState(true);
     const [showLoginAlert, setShowLoginAlert] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
-    const { quantity, setQuantity, isLogin,setIsLogin} = useContext(CustomerContext)
+    const { quantity, setQuantity, isLogin, setIsLogin  ,jwt} = useContext(CustomerContext)
     const [searchedTerm, setSearchedTerm] = useState([]);
     const [showRecent, setShowRecent] = useState(false);
     const [logoutPopup, setLogoutPopup] = useState(false);
@@ -25,46 +25,54 @@ export default function Navbar() {
     const [address, setAddress] = useState("");
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
-    const[locationPopup ,setLocationPopup] = useState(false);
-    const navigate=useNavigate()
+    const [locationPopup, setLocationPopup] = useState(false);
+    const navigate = useNavigate()
 
-    const [logoutmutation]=useMutation(LOG_OUT)
-
-
-    const { data } = useQuery(GET_CART_QUANTITY, { fetchPolicy: "no-cache" });
-    useEffect(() => {
-        if (data?.getCartQuantity) {
-            setQuantity(data?.getCartQuantity);
-        }
-    }, [data?.getCartQuantity])
+    const [logoutmutation] = useMutation(LOG_OUT)
 
 
+    // const { data } = useQuery(GET_CART_QUANTITY, { fetchPolicy: "no-cache" });
+    // useEffect(() => {
+    //     if (data?.getCartQuantity) {
+    //         setQuantity(data?.getCartQuantity);
+    //     }
+    // }, [data?.getCartQuantity])
+    // console.log(quantity +"<<<<<<<<<<quantity");
+    
 
-    const { data: Searchdata } = useQuery(GET_RECENT_SEARCH, { fetchPolicy: "no-cache" });
+
+    const { data: Searchdata } = useQuery(GET_RECENT_SEARCH, { fetchPolicy: "no-cache" ,skip: !isLogin });
 
     // console.log(Searchdata?.getRecentSearch,"Searchdata");
 
 
     useEffect(() => {
         if (Searchdata?.getRecentSearch) {
-            // console.log(Searchdata?.getRecentSearch);
+            console.log(Searchdata?.getRecentSearch);
             setSearchedTerm(Searchdata?.getRecentSearch.map(item => item.searched_product_name));
         }
     }, [Searchdata]);
+
     // console.log(searchedTerm + " searhed term");
 
 
 
     useEffect(() => {
-        if (searchTerm && searchTerm.trim() !== "") {
+        if (searchTerm && searchTerm?.trim() !== "") {
             navigate(`/products?search=${encodeURIComponent(searchTerm.trim())}`);
         }
     }, [searchTerm]);
 
-
+    
+    
     const gotocart = () => {
-        navigate("/cart")
+        console.log(!jwt + " login state");
+        navigate("/cart");
     }
+
+    
+    
+    
     const moveTohome = () => {
         navigate("/slide")
     }
@@ -73,12 +81,13 @@ export default function Navbar() {
         setLogoutPopup(true);
     }
     const handlelogoutClose = () => setLogoutPopup(false);
-    const handlelogout =async () => {
-        const {data:logout}=await logoutmutation()
+    const handlelogout = async () => {
+        const { data: logout } = await logoutmutation()
         toast.success(logout?.logout)
         setLogoutPopup(false)
         setQuantity(0)
         setIsLogin(false)
+        setSearchedTerm([]);
         navigate("/login")
     }
 
@@ -113,10 +122,16 @@ export default function Navbar() {
     const ShowLocation = () => {
         setLocationPopup(true);
     }
-    const handleLocationPopup =()=>{
+    const handleLocationPopup = () => {
         setLocationPopup(false);
     }
     console.log(address + " address");
+    const CustomerLogin = () => {
+        navigate("/login");
+    }
+    const MerchantLogin = () => {
+        navigate("/MerchantLogin?type=Merchant")
+    }
 
     return (
         <>
@@ -152,14 +167,27 @@ export default function Navbar() {
                             />
                             <FaSearch className="px-2 text-warning" style={{ fontSize: "35px" }} />
                             {showRecent && searchedTerm.length > 0 && (
-                                <ul className="list-group position-absolute shadow" style={{ zIndex: 10, marginTop: "245px ", width: "390px" }}>
+                                <ul
+                                    className="list-group position-absolute shadow bg-white rounded"
+                                    style={{ top: "100%",  
+                                        left: "50",width: "30%", zIndex: 1000,  maxHeight: "200px", overflowY: "auto",
+                                    }}>
                                     {searchedTerm.map((term, index) => (
-                                        <li key={index} className='list-group-item list-group-item-action' onMouseDown={() => setSearchTerm(term)} >
+                                        <li
+                                            key={index}
+                                            className="list-group-item list-group-item-action"
+                                            onMouseDown={() => setSearchTerm(term)}
+                                            style={{
+                                                cursor: "pointer",
+                                                padding: "10px",
+                                            }}
+                                        >
                                             {term}
                                         </li>
                                     ))}
                                 </ul>
                             )}
+
                         </div>
                     </form>
 
@@ -185,10 +213,10 @@ export default function Navbar() {
                                         <a className="dropdown-item" href="/MerchantLogin?type=Merchant">Enter as Merchant</a>
                                     </button>
                                     <button className="dropdown-btn">
-                                        <a className="dropdown-item" href="/orders">Orders</a>
+                                        <a className="dropdown-item" onClick={() => navigate("/orders")}>Orders</a>
                                     </button>
                                     <button className="dropdown-btn">
-                                        <a className="dropdown-item" href="/profile">Your Profile</a>
+                                        <a className="dropdown-item" onClick={() => navigate("/profile")}>Your Profile</a>
                                     </button>
                                     <button className="dropdown-btn">
                                         <a className="dropdown-item" onClick={() => logout()}>Logout</a>
@@ -196,10 +224,10 @@ export default function Navbar() {
                                 </>
                             ) : (
                                 <>
-                                <div className="align-items-start d-flex flex-start">
-                                <button className="dropdown-item text-success fw-bold text-center" onClick={()=>CustomerLogin()} >Login </button>
-                                <button className="dropdown-item text-success fw-bold text-center" onClick={()=>MerchantLogin()}>Login as Merchant</button>
-                                </div>
+                                    <div className="align-items-start d-flex flex-column flex-start">
+                                        <button className="dropdown-item text-success fw-bold text-center" onClick={() => CustomerLogin()} >Login </button>
+                                        <button className="dropdown-item text-success fw-bold text-center" onClick={() => MerchantLogin()}>Login as Merchant</button>
+                                    </div>
                                 </>
                             )}
                         </ul>
@@ -217,7 +245,7 @@ export default function Navbar() {
                 </>
             }
 
-            { locationPopup && 
+            {locationPopup &&
                 <Location
                     show={true}
                     handleClose={handleLocationPopup}

@@ -62,9 +62,9 @@ export default function CommonLogin({ title, onSubmit, showRegisterLink }) {
         </div>
 
         {/* Forgot Password */}
-        <div className="mb-3 text-end">
+        {/* <div className="mb-3 text-end">
           <a href="#" className="text-decoration-underline text-black">Forgot Password?</a>
-        </div>
+        </div> */}
 
         {/* Submit Button */}
         <button type="submit" className="btn btn-warning w-100 text-white">
