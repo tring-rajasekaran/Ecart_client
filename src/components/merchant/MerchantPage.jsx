@@ -89,6 +89,10 @@ export default function MerchantPage() {
         await logout();
         navigate("/MerchantLogin?type=Merchant");
     };
+    const CustomerLogin = async()=>{
+        await logout();
+        navigate("/")
+    }
 
     return (
         <>
@@ -104,7 +108,7 @@ export default function MerchantPage() {
                         <Dropdown.Item href="/Merchantorders">Orders</Dropdown.Item>
                         <Dropdown.Item onClick={Logout}>Logout</Dropdown.Item>
                         <Dropdown.Item onClick={()=>navigate("/MerchantNewProduct")}>Add new Product</Dropdown.Item>
-                        <Dropdown.Item onClick={()=>navigate("/")}>Enter into E-cart</Dropdown.Item>
+                        <Dropdown.Item onClick={()=>CustomerLogin()}>Enter into E-cart</Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
             </Navbar>

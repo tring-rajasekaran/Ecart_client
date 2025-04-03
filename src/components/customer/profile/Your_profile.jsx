@@ -5,6 +5,7 @@ import { USER_DETAILS } from "../../../graphql/query/customerQuery";
 import { UPDATE_CUSTOMER_DETAILS } from "../../../graphql/mutation/customerMutation";
 import { useQuery, useMutation } from '@apollo/client';
 import { useNavigate } from "react-router-dom";
+import toast from "react-hot-toast";
 
 export default function Profile() {
   const navigate = useNavigate();
@@ -53,10 +54,10 @@ export default function Profile() {
       });
 
       setIsEditing(false);
-      alert("Profile updated successfully!");
+      toast.success("Profile updated successfully!");
     } catch (err) {
       console.error("Error updating profile:", err);
-      alert("Failed to update profile!");
+      toast.error("Failed to update profile!");
     }
   };
 
@@ -98,7 +99,7 @@ export default function Profile() {
               <label className="fw-bold py-1">Delivery Address</label>
               {isEditing ? (
                 <textarea
-                  className="form-control border border-none focus-ring focus-ring-warning"
+                  className="form-control border border-none focus-ring focus-ring-warning no-resize"
                   rows="2"
                   name="address"
                   value={formData.address}

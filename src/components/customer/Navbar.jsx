@@ -30,14 +30,6 @@ export default function Navbar() {
 
     const [logoutmutation] = useMutation(LOG_OUT)
 
-
-    // const { data } = useQuery(GET_CART_QUANTITY, { fetchPolicy: "no-cache" });
-    // useEffect(() => {
-    //     if (data?.getCartQuantity) {
-    //         setQuantity(data?.getCartQuantity);
-    //     }
-    // }, [data?.getCartQuantity])
-    // console.log(quantity +"<<<<<<<<<<quantity");
     
 
 
@@ -132,6 +124,15 @@ export default function Navbar() {
     const MerchantLogin = () => {
         navigate("/MerchantLogin?type=Merchant")
     }
+    const EnterMerchant= async()=>{
+        const { data: logout } = await logoutmutation()
+        toast.success(logout?.logout)
+        setLogoutPopup(false)
+        setQuantity(0)
+        setIsLogin(false)
+        setSearchedTerm([]);
+        navigate("/MerchantLogin?type=Merchant")
+    }
 
     return (
         <>
@@ -210,7 +211,7 @@ export default function Navbar() {
                             {isLogin ? (
                                 <>
                                     <button className="dropdown-btn">
-                                        <a className="dropdown-item" href="/MerchantLogin?type=Merchant">Enter as Merchant</a>
+                                        <a className="dropdown-item" onClick={()=> EnterMerchant()}>Enter as Merchant</a>
                                     </button>
                                     <button className="dropdown-btn">
                                         <a className="dropdown-item" onClick={() => navigate("/orders")}>Orders</a>
