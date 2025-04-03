@@ -9,7 +9,7 @@ import { toast } from "react-hot-toast";
 import { EncryptPassword } from "../EncryptPassword";
 
 export default function Login() {
-  const {setIsLogin}=useContext(CustomerContext)
+  const { setIsLogin } = useContext(CustomerContext)
   console.log(setIsLogin, " setIsLogin")
   const navigate = useNavigate();
   const [loginUser, { data, error, loading }] = useMutation(LOGIN_USER, {
@@ -17,21 +17,21 @@ export default function Login() {
   });
 
   const handleLogin = async (userdata) => {
-        const encryptedPassword = EncryptPassword(userdata.password)
-        console.log(encryptedPassword ,"<<<<<<<<<< ");
-    
+    const encryptedPassword = EncryptPassword(userdata.password)
+    // console.log(encryptedPassword ,"<<<<<<<<<< ");
+
     try {
-      await loginUser({
+     const res = await loginUser({
         variables: {
           email: userdata.email,
           password: encryptedPassword,
         }
-      });
+      }).then((res)=>localStorage.setItem("username",( res?.data?.login?.replace("Login successful" ,"").trim())));
 
       console.log("User logged in successfully");
       toast.success("User logged in successfully");
       setIsLogin(true)
-      navigate("/slide"); 
+      navigate("/slide");
 
     } catch (err) {
       console.error("Login error:", err.message);
@@ -56,7 +56,7 @@ export default function Login() {
     <div className="container">
       <div className="row d-flex justify-content-center align-items-center">
         <div className="col-md-4 mt-5">
-          <CommonLogin title="Login" onSubmit={handleLogin} showRegisterLink={true}/>
+          <CommonLogin title="Login" onSubmit={handleLogin} showRegisterLink={true} />
         </div>
       </div>
     </div>

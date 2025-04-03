@@ -3,10 +3,13 @@ import { BsCurrencyRupee } from "react-icons/bs";
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { useQuery } from '@apollo/client';
 import { GET_ORDERED_PRODUCT } from '../../graphql/query/productQuery';
+import { useNavigate } from "react-router-dom";
+
+
 
 export default function Orders() {
     const [orderedProduct, setOrderProduct] = useState([]);
-
+    const navigate = useNavigate();
     const { data, loading, error } = useQuery(GET_ORDERED_PRODUCT,{fetchPolicy:"no-cache"});
 
     console.log(data, " responce");
@@ -30,7 +33,7 @@ export default function Orders() {
             <div className=''>
                 <div className='p-1 ms-5'>
                     <p>
-                        <a href="/profile" className="text-decoration-underline text-dark">Your Account</a>
+                        <a role="button" onClick={()=>navigate("/profile")} className="text-decoration-underline text-dark cursor-pointer">Your Account</a>
                         <span className="text-warning"> &gt; Your Orders</span>
                     </p>
                     {/* <p>{json}</p> */}

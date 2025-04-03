@@ -25,7 +25,7 @@ export default function Profile() {
   useEffect(() => {
     if (data && data.getCustomerDetails?.length > 0) {
       setFormData({
-        name: data.getCustomerDetails[0].name || "Name",
+        name: data.getCustomerDetails[0].name || "Enter you name",
         email: data.getCustomerDetails[0].email || "Email (Cannot Be changed)",
         address: data.getCustomerDetails[0].address || "Add your Delivery Address By clicking Edit Button ⬇️",
       });
@@ -46,6 +46,10 @@ export default function Profile() {
 
   const handleSave = async () => {
     try {
+      if(formData.name ==="" || formData.address===""){
+         toast("⚠️ Cannot be empty")
+         return;
+      }
       await updateCustomerDetails({
         variables: {
           name: formData.name,

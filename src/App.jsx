@@ -4,6 +4,8 @@ import { createContext, useEffect, useState } from 'react';
 import { Toaster } from 'react-hot-toast';
 import { GET_CART_QUANTITY } from './graphql/query/productQuery';
 import { useLazyQuery } from '@apollo/client';
+import Cookies from 'js-cookie'
+
 
 export const CustomerContext = createContext();
 
@@ -11,29 +13,34 @@ function App() {
   const [quantity, setQuantity] = useState(0);
   const [isLogin, setIsLogin] = useState(false);
 
-  // Get JWT from cookies
+
   function getJWT() {
-    const cookies = document.cookie.split(';');
-    for (let cookie of cookies) {
-      let [key, value] = cookie.split('=').map(c => c.trim());
-      if (key === 'jwt') {
-        return value;
-      }
-    }
-    return null;
+    const cookieString = document.cookie;
+    console.log("cookies=======",cookieString )
+    // const cookies = cookieString.split(';');
+    // for (let i = 0; i < cookies.length; i++) {
+    //   const cookie = cookies[i].trim();
+    //   if (cookie.startsWith('jwt')) {
+        
+    //     return cookie.substring(4); 
+    //   }
+    // }
+    // return null; 
   }
 
-  // Declare jwt here by calling the getJWT function
   const jwt = getJWT();
+  console.log("JWT Token:", jwt); 
 
-  // Check if JWT exists and set the login state
+  console.log(document.cookie);
+  
+
   useEffect(() => {
-    if (jwt) {
+    if (isLogin) {
       setIsLogin(true);
     } else {
       setIsLogin(false);
     }
-  }, [jwt]);
+  }, [isLogin]);
 
   const [getCartQuantity] = useLazyQuery(GET_CART_QUANTITY, {
     fetchPolicy: 'network-only',
@@ -44,13 +51,10 @@ function App() {
   });
 
   useEffect(() => {
-    if (isLogin) {
-      console.log(isLogin, 'login state');
-      getCartQuantity();
-    }
-  }, [isLogin, getCartQuantity]);
 
-  console.log(quantity + '<<<<<<<<<<quantity');
+      getCartQuantity();
+  }, []);
+
 
   return (
     <>

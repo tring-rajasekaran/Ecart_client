@@ -19,15 +19,17 @@ export default function MerchantLogin() {
   const handleLogin = async (data) => {
     const encryptedPassword = CryptoJS.AES.encrypt(data.password, secretKey).toString();
   
-
+    
     try {
-      await merchantLogin({
+      const res = await merchantLogin({
         variables: {
           email: data.email,
           password: encryptedPassword,
           login_type: "Merchant"
         }
-      });
+      }).then((res)=>localStorage.setItem("username",( res?.data?.login?.replace("Login successful" ,"").trim())))
+
+    
       toast.success("logged in successfully")
       console.log("<<<<<<<<<<<<<<<,logged in successfully");
       navigate("/MerchantPage")
@@ -35,6 +37,7 @@ export default function MerchantLogin() {
 
     }
     catch (err) {
+      toast.error("Inavlid Credentials !")
       console.log(err.message, "error occured ");
 
     }

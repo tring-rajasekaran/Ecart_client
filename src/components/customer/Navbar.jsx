@@ -1,13 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { FaUserLarge, FaLocationDot } from "react-icons/fa6";
-import { FaSearch, FaShoppingCart } from "react-icons/fa";
+import { FaLocationDot } from "react-icons/fa6";
+import { FaSearch, FaShoppingCart, FaUserCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import { GET_CART_QUANTITY, GET_RECENT_SEARCH } from '../../graphql/query/productQuery';
+import {GET_RECENT_SEARCH } from '../../graphql/query/productQuery';
 import { useMutation, useQuery } from '@apollo/client';
 import { CustomerContext } from '../../App';
 import LogoutModal from './LogoutModal'
-import Cookies from 'js-cookie';
 import Location from './Location';
 import { LOG_OUT } from '../../graphql/mutation/merchantMutation';
 import toast from 'react-hot-toast';
@@ -17,7 +16,7 @@ export default function Navbar() {
     const [userId, setUserId] = useState(true);
     const [showLoginAlert, setShowLoginAlert] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
-    const { quantity, setQuantity, isLogin, setIsLogin  ,jwt} = useContext(CustomerContext)
+    const { quantity, setQuantity, isLogin, setIsLogin, jwt } = useContext(CustomerContext)
     const [searchedTerm, setSearchedTerm] = useState([]);
     const [showRecent, setShowRecent] = useState(false);
     const [logoutPopup, setLogoutPopup] = useState(false);
@@ -30,10 +29,10 @@ export default function Navbar() {
 
     const [logoutmutation] = useMutation(LOG_OUT)
 
-    
 
 
-    const { data: Searchdata } = useQuery(GET_RECENT_SEARCH, { fetchPolicy: "no-cache" ,skip: !isLogin });
+
+    const { data: Searchdata } = useQuery(GET_RECENT_SEARCH, { fetchPolicy: "no-cache", skip: !isLogin });
 
     // console.log(Searchdata?.getRecentSearch,"Searchdata");
 
@@ -55,16 +54,16 @@ export default function Navbar() {
         }
     }, [searchTerm]);
 
-    
-    
+
+
     const gotocart = () => {
         console.log(!jwt + " login state");
         navigate("/cart");
     }
 
-    
-    
-    
+
+
+
     const moveTohome = () => {
         navigate("/slide")
     }
@@ -80,6 +79,7 @@ export default function Navbar() {
         setQuantity(0)
         setIsLogin(false)
         setSearchedTerm([]);
+        localStorage.clear();
         navigate("/login")
     }
 
@@ -117,22 +117,25 @@ export default function Navbar() {
     const handleLocationPopup = () => {
         setLocationPopup(false);
     }
-    console.log(address + " address");
+    // console.log(address + " address");
     const CustomerLogin = () => {
         navigate("/login");
     }
     const MerchantLogin = () => {
         navigate("/MerchantLogin?type=Merchant")
     }
-    const EnterMerchant= async()=>{
+    const EnterMerchant = async () => {
         const { data: logout } = await logoutmutation()
-        toast.success(logout?.logout)
+        toast.success("Logged out and Enter into Merchant")
         setLogoutPopup(false)
         setQuantity(0)
         setIsLogin(false)
         setSearchedTerm([]);
         navigate("/MerchantLogin?type=Merchant")
     }
+
+
+    console.log(jwt, " jwt ");
 
     return (
         <>
@@ -150,6 +153,12 @@ export default function Navbar() {
                         <FaLocationDot className='mb-1' />
                         <h5 className='mb-1'>Chennai</h5>
                     </div>
+                    <div className="position-relative px-3">
+                        <FaShoppingCart className="fs-3 text-dark" style={{ cursor: "pointer" }} onClick={() => gotocart()} />
+                        <span className="position-absolute top-0 start-80 translate-middle badge rounded-pill bg-danger text-white">
+                            {quantity}
+                        </span>
+                    </div>
                 </div>
                 <div>
                     <form className="d-flex w-100" role="search" onSubmit={(e) => e.preventDefault()}>
@@ -164,14 +173,15 @@ export default function Navbar() {
                                 onFocus={() => setShowRecent(true)}
                                 onBlur={() => setTimeout(() => {
                                     setShowRecent(false)
-                                }, 2000)}
+                                }, 1000)}
                             />
                             <FaSearch className="px-2 text-warning" style={{ fontSize: "35px" }} />
                             {showRecent && searchedTerm.length > 0 && (
                                 <ul
                                     className="list-group position-absolute shadow bg-white rounded"
-                                    style={{ top: "100%",  
-                                        left: "50",width: "30%", zIndex: 1000,  maxHeight: "200px", overflowY: "auto",
+                                    style={{
+                                        top: "100%",
+                                        left: "50", width: "30%", zIndex: 1000, maxHeight: "200px", overflowY: "auto",
                                     }}>
                                     {searchedTerm.map((term, index) => (
                                         <li
@@ -181,8 +191,7 @@ export default function Navbar() {
                                             style={{
                                                 cursor: "pointer",
                                                 padding: "10px",
-                                            }}
-                                        >
+                                            }}>
                                             {term}
                                         </li>
                                     ))}
@@ -195,23 +204,22 @@ export default function Navbar() {
                 </div>
 
                 <div className="d-flex align-items-center gap-3">
-                    <div className="position-relative">
-                        <FaShoppingCart className="fs-3 text-dark" style={{ cursor: "pointer" }} onClick={() => gotocart()} />
-                        <span className="position-absolute top-0 start-80 translate-middle badge rounded-pill bg-danger text-white">
-                            {quantity}
-                        </span>
+                    <div>
+                        {localStorage.getItem("username") &&
+                            <h5>Hello ,{localStorage.getItem("username")}</h5>
+                        }
                     </div>
 
 
                     <div className="dropdown">
-                        <button className="btn btn-warning dropdown-toggle" data-bs-toggle="dropdown" type="button" aria-expanded="false">
-                            <FaUserLarge />
+                        <button className="btn btn-warning " data-bs-toggle="dropdown" type="button" aria-expanded="false">
+                            <FaUserCircle style={{ height: "30px ", width: "30px", marginLeft: "-20px" }} />
                         </button>
-                        <ul className="dropdown-menu dropdown-menu-end mt-2 border border-none">
-                            {isLogin ? (
+                        <ul className="dropdown-menu dropdown-menu-end mt-2 bg-carning border border-none">
+                            {localStorage.getItem("username") ? (
                                 <>
                                     <button className="dropdown-btn">
-                                        <a className="dropdown-item" onClick={()=> EnterMerchant()}>Enter as Merchant</a>
+                                        <a className="dropdown-item" onClick={() => EnterMerchant()}>Enter as Merchant</a>
                                     </button>
                                     <button className="dropdown-btn">
                                         <a className="dropdown-item" onClick={() => navigate("/orders")}>Orders</a>

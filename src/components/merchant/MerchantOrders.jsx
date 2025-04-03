@@ -3,12 +3,13 @@ import { BsCurrencyRupee } from "react-icons/bs";
 import { useMutation, useQuery } from '@apollo/client';
 import { GET_MERCHANT_ORDER, UPDATE_MERCHANT_ORDER } from '../../graphql/query/merchantQuery';
 import { toast } from "react-hot-toast";
+import { FaArrowLeft } from 'react-icons/fa6';
 
 
 export default function MerchantOrders() {
 
     const [changeOrderStatus] = useMutation(UPDATE_MERCHANT_ORDER, { fetchPolicy: "no-cache" })
-    const { data, loading, error ,refetch} = useQuery(GET_MERCHANT_ORDER);
+    const { data, loading, error, refetch } = useQuery(GET_MERCHANT_ORDER);
     const [products, setProducts] = useState([]);
 
     useEffect(() => {
@@ -34,14 +35,6 @@ export default function MerchantOrders() {
             });
             statusofOrder === "accepted" ? toast.success("Order Accepted") : toast.success("Order Rejected")
             console.log("Order status updated: ", res.data.updateMerchantOrder);
-            setProducts((prevProducts) =>
-                prevProducts.map((product) =>
-                    product.product_id === product_id 
-                        ? { ...product, order_status: statusofOrder } 
-                        : product
-                )
-            );
-    
         } catch (err) {
             console.error("Error updating order status:", err);
         }
@@ -50,8 +43,13 @@ export default function MerchantOrders() {
     return (
         <>
             <div className=''>
-                <div className='p-2 ms-0 bg-warning'>
-                    <h3>Your Orders :</h3>
+                <div className='p-2 ms-0 bg-warning d-flex'>
+                    <div className='d-flex w-50 justify-content-between'>
+                        <button className="btn btn-link text-dark mb-1" onClick={() => window.history.back()}>
+                            <FaArrowLeft size={20} />
+                        </button>
+                        <h3>Your Orders</h3>
+                    </div>
                 </div>
             </div>
             <div className='d-flex justify-content-around'>
