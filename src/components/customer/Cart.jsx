@@ -8,17 +8,17 @@ import { useQuery, useMutation } from "@apollo/client";
 import { CustomerContext } from "../../App";
 import { toast } from "react-hot-toast";
 import { MdRemoveShoppingCart } from "react-icons/md";
-
+import { useNavigate } from "react-router-dom";
 
 export default function Cart() {
-    const { data, loading, error } = useQuery(GET_CART_PRODUCT, { fetchPolicy: "no-cache" });
+    const { data, loading, error ,refetch} = useQuery(GET_CART_PRODUCT, { fetchPolicy: "no-cache" });
     const [cartProducts, setCartProducts] = useState([]);
-    const { quantity, setQuantity, jwt } = useContext(CustomerContext);
+    const { quantity, setQuantity } = useContext(CustomerContext);
     const [selectedProducts, setSelectedProducts] = useState([]);
-
+    const [select, setSelect] = useState(false);
     const [orderedProduct, setOrderProduct] = useState([])
     const [terms, setTerms] = useState(false);
-
+    const navigate = useNavigate();
     const [deleteCartProduct] = useMutation(REMOVE_FROM_CART, { fetchPolicy: "no-cache" });
 
     useEffect(() => {
@@ -87,10 +87,15 @@ export default function Cart() {
     const orderData = orderedProduct.map(({ product_id, quantity }) => ({ product_id, quantity }));
 
     const confirmOrder = async () => {
+
         try {
             await setOrder({ variables: { orders: orderData } });
             toast.success("Order placed successfully!");
         } catch (error) {
+            if (error.message === "no address") {
+                toast("Please fill the address in profile page !")
+                navigate("/profile");
+            }
             console.error("Order Error:", error);
         }
     };
@@ -103,7 +108,7 @@ export default function Cart() {
         setTerms(event.target.checked);
         if (!terms) {
             toast(
-                "⚠️Once You placed Order it cannot be canceled, \n\n So please check Twice before ordering products",
+                "⚠️Once You placed Order it cannot be canceled, \n\n So please check Twice before ordering your products",
                 {
                     duration: 7000,
                     position: "top-center",
@@ -112,7 +117,13 @@ export default function Cart() {
         }
     }
     console.log(terms + " initial ");
+    const selectAll=()=>{
+        setSelect(select);
+        console.log(select ,"state");
+        
+        setSelectedProducts([])
 
+    }
 
     return (
         <>
@@ -121,6 +132,10 @@ export default function Cart() {
                     <h3>
                         Your Cart <FaShoppingCart className="fs-3 text-dark mb-1" />
                     </h3>
+                </div>
+                <div className="d-flex flex-row align-items-center px-4 justify-content-start gap-2">
+                    <input type="checkbox"  className="align-middle"onChange={()=>selectAll()}/>
+                    <p className="mb-0">Deselect All</p>
                 </div>
 
                 <div className="w-100 h-100 d-flex" >
@@ -183,7 +198,7 @@ export default function Cart() {
                             ) : (
 
                                 <>
-                                    {jwt ? (
+                                    {localStorage.getItem("username") ? (
                                         <p className="text-center align-items-center fw-bold fs-4">
                                             Your cart is empty. <MdRemoveShoppingCart className="fs-3" />
                                         </p>

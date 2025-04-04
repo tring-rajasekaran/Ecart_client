@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 import { FaSave } from 'react-icons/fa';
 
-export default function MerchantEdit({ product, show, onHide, onSave }) {
+export default function MerchantEdit({ product, show, onHide, onSave , refetch }) {
     const [editedProduct, setEditedProduct] = useState({ ...product });
     const [imagePreview, setImagePreview] = useState(product.image);
     const [errors, setErrors] = useState({});
@@ -35,6 +35,7 @@ export default function MerchantEdit({ product, show, onHide, onSave }) {
     const handleSave = () => {
         if (validateForm()) {
             onSave(editedProduct);
+            refetch();
         }
     };
 
@@ -70,11 +71,11 @@ export default function MerchantEdit({ product, show, onHide, onSave }) {
                         <Form.Control.Feedback type="invalid">{errors.product_name}</Form.Control.Feedback>
                         
                         <h5>Description</h5>
-                        <Form.Control
+                        <Form.Control 
                             as="textarea"
                             value={editedProduct.description}
                             onChange={(e) => handleInputChange("description", e.target.value)}
-                            className="mb-2"
+                            className="mb-2 no-resize"
                             style={{ height: "80px" }}
                             isInvalid={!!errors.description}
                         />

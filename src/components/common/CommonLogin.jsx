@@ -61,11 +61,6 @@ export default function CommonLogin({ title, onSubmit, showRegisterLink }) {
           {errors.password && <div className="invalid-feedback d-inline">{errors.password.message}</div>}
         </div>
 
-        {/* Forgot Password */}
-        {/* <div className="mb-3 text-end">
-          <a href="#" className="text-decoration-underline text-black">Forgot Password?</a>
-        </div> */}
-
         {/* Submit Button */}
         <button type="submit" className="btn btn-warning w-100 text-white">
           {title}

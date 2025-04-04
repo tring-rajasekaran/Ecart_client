@@ -4,6 +4,7 @@ import { useMutation, useQuery } from '@apollo/client';
 import { GET_MERCHANT_ORDER, UPDATE_MERCHANT_ORDER } from '../../graphql/query/merchantQuery';
 import { toast } from "react-hot-toast";
 import { FaArrowLeft } from 'react-icons/fa6';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
 
 export default function MerchantOrders() {
@@ -118,9 +119,20 @@ export default function MerchantOrders() {
                                 </div>
                             </div>
                         ))}
+                        {products.length === 0 &&
+                            <div className='d-flex flex-column justify-content-center align-items-center'>
+                                <h3>Sorry You don't have any orders !</h3>
+                                <DotLottieReact className='w-50' 
+                                    src="https://lottie.host/d91e1d4e-0b9f-4dcc-8c59-d6bff4defb8c/JErolswApH.lottie"
+                                    loop
+                                    autoplay
+                                />
+                            </div>
+
+                        }
                     </div>
                 </div>
-
+                
                 <div className="w-25 d-flex flex-column align-items-center justify-content-center gap-0">
                     <h4 className="fw-bold text-center mb-0">Total Number of <br />Orders: {products.length}</h4>
                 </div>
@@ -128,3 +140,5 @@ export default function MerchantOrders() {
         </>
     )
 }
+
+

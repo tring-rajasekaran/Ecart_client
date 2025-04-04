@@ -13,7 +13,6 @@ import toast from 'react-hot-toast';
 
 
 export default function Navbar() {
-    const [userId, setUserId] = useState(true);
     const [showLoginAlert, setShowLoginAlert] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const { quantity, setQuantity, isLogin, setIsLogin, jwt } = useContext(CustomerContext)
@@ -32,9 +31,9 @@ export default function Navbar() {
 
 
 
-    const { data: Searchdata } = useQuery(GET_RECENT_SEARCH, { fetchPolicy: "no-cache", skip: !isLogin });
+    const { data: Searchdata } = useQuery(GET_RECENT_SEARCH, { fetchPolicy: "no-cache", skip: !localStorage.getItem("username") });
 
-    // console.log(Searchdata?.getRecentSearch,"Searchdata");
+    console.log(Searchdata?.getRecentSearch,"Searchdata");
 
 
     useEffect(() => {
@@ -44,7 +43,7 @@ export default function Navbar() {
         }
     }, [Searchdata]);
 
-    // console.log(searchedTerm + " searhed term");
+    console.log(searchedTerm + " searhed term");
 
 
 

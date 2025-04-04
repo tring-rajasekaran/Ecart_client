@@ -6,6 +6,7 @@ import "../customer/profile/Your_profile.css";
 import { UploadButton } from "@bytescale/upload-widget-react";
 import { ADD_PRODUCT } from "../../graphql/mutation/merchantMutation";
 import { useMutation } from "@apollo/client";
+import toast from "react-hot-toast";
 
 
 export default function MerchantNewProduct() {
@@ -46,7 +47,7 @@ export default function MerchantNewProduct() {
             console.log(err.message);
         }
         console.log("Product Data:", productData);
-        alert("Product added successfully!");
+        toast.success("Product Added successfully")
         reset();
         setImagePreview(null)
 

@@ -15,8 +15,6 @@ export default function Orders() {
     console.log(data, " responce");
 
     useEffect(() => {
-
-
         if (data && data.getOrdersProduct) {
             console.log(data.getOrdersProduct, " ordered product ");
             setOrderProduct(data.getOrdersProduct);
@@ -89,7 +87,7 @@ export default function Orders() {
                                                     {order.description}
                                                 </textarea>
                                                 <h5 className="text-success fw-bold">
-                                                    <BsCurrencyRupee className='mb-1' />{order.price}
+                                                    <BsCurrencyRupee className='mb-1' />{order.price} {"(Per Unit)"}
                                                 </h5>
                                                 <div className='d-flex justify-content-between w-100 align-items-center'>
                                                     <span className="p-2 rounded bg-warning mt-2"> <p className="mb-0">Quantity: {order.quantity}</p></span>

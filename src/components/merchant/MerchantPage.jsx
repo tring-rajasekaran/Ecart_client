@@ -26,18 +26,24 @@ export default function MerchantPage() {
     const [editData, setEditData] = useState(null);
     const [hasMore, setHasMore] = useState(true);
 
-    const { loading, error, data } = useQuery(GET_MERCHANT_PRODUCT, {
+    const { loading, error, data , refetch } = useQuery(GET_MERCHANT_PRODUCT , {
         variables: { page: pageNumber },
+        fetchPolicy:"no-cache"
     });
 
 
     const navigate = useNavigate();
     useEffect(() => {
         if (data?.getMerchantProduct) {
-            setProducts((prevProducts) => [...prevProducts, ...data.getMerchantProduct]);
+            console.log("data call");
+            
+            setProducts(data.getMerchantProduct);
             setHasMore(data.getMerchantProduct.length === 8);
         }
     }, [data]);
+
+    console.log(products, "products >>>>");
+    
 
     const fetchMoreData = () => {
         setPageNUmber((prevPage) => prevPage + 1);
@@ -69,13 +75,9 @@ export default function MerchantPage() {
                 }
             });
 
-            setProducts((prevProducts) =>
-                prevProducts.map((product) =>
-                    product.product_id === updatedProduct.product_id
-                        ? { ...product, ...updatedProduct }
-                        : product
-                )
-            );
+            refetch()
+
+           
             toast.success("Updated successfully !")
         } catch (err) {
             console.error(err.message);
@@ -84,9 +86,12 @@ export default function MerchantPage() {
     };
 
     const DeleteMerchantProduct = async (id) => {
+        console.log(id, " product_id");
+
         try {
             await deleteMerchantProduct({ variables: { product_id: id } });
             setProducts((prev) => prev.filter((product) => product.product_id !== id));
+            toast.success("Removed successfully")
         } catch (err) {
             console.error("Error while deleting:", err.message);
         }
@@ -114,18 +119,18 @@ export default function MerchantPage() {
                     <div className="d-flex flex-row gap-4 w-75 p-2 align-items-center">
                         <h4 className="font-italic">Your Products</h4>
                     </div>
-
                 </Container>
                 <Dropdown>
-                    <Dropdown.Toggle  as="div"variant="warning"  className="d-flex flex-row  w-75 align-items-center">
-                    <div>
-                        <FaUserCircle style={{ height: "30px ", width: "30px", marginLeft: "-20px" }} />
-                    </div>
+                    <Dropdown.Toggle as="div" variant="warning" className="d-flex flex-row w-75 align-items-center">
+                        <h4 className="px-5 fst-italic">Hello, {localStorage.getItem("username")}</h4>
+                        <div>
+                            <FaUserCircle style={{ height: "30px ", width: "30px", marginLeft: "-20px" }} />
+                        </div>
                     </Dropdown.Toggle>
                     <Dropdown.Menu align="end">
                         <Dropdown.Item href="/Merchantorders">Orders</Dropdown.Item>
                         <Dropdown.Item onClick={Logout}>Logout</Dropdown.Item>
-                        <Dropdown.Item onClick={() => navigate("/MerchantNewProduct")}>Add new Product</Dropdown.Item>
+                        <Dropdown.Item onClick={() => navigate("/MerchantNewProduct")}>Add Product</Dropdown.Item>
                         <Dropdown.Item onClick={() => CustomerLogin()}>Enter into E-cart</Dropdown.Item>
                     </Dropdown.Menu>
                 </Dropdown>
@@ -179,6 +184,7 @@ export default function MerchantPage() {
                     show={isEdit}
                     onHide={handleEditClose}
                     onSave={handleEditSave}
+                    refetch={refetch}
                 />
             )}
             {logoutPopup && (

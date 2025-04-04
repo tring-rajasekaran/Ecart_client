@@ -19,7 +19,7 @@ export default function MerchantLogin() {
   const handleLogin = async (data) => {
     const encryptedPassword = CryptoJS.AES.encrypt(data.password, secretKey).toString();
   
-    
+
     try {
       const res = await merchantLogin({
         variables: {
@@ -37,16 +37,20 @@ export default function MerchantLogin() {
 
     }
     catch (err) {
-      toast.error("Inavlid Credentials !")
+      // toast.error("Inavlid Password!")
       console.log(err.message, "error occured ");
 
     }
   };
   useEffect(() => {
     if (error) {
+      if(error.message.includes("Invalid credentials")){
+         toast.error("Invalid passoword")
+         return;
+      }
       console.error("Error:", error.message);
-      if (error.message.includes("Merchant not found")) {
-        alert("Merchant not found, redirecting to registration...");
+      if (error.message.includes("User not found")) {
+        toast.error("Merchant not found, redirecting to registration...");
         navigate("/MerchantRegister");
       } else if (error.message.includes("Invalid credentials")) {
         console.log("Invalid password, alert user...");
