@@ -9,9 +9,10 @@ import { CustomerContext } from "../../App";
 import { toast } from "react-hot-toast";
 import { MdRemoveShoppingCart } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 export default function Cart() {
-    const { data, loading, error ,refetch} = useQuery(GET_CART_PRODUCT, { fetchPolicy: "no-cache" });
+    const { data, loading, error, refetch } = useQuery(GET_CART_PRODUCT, { fetchPolicy: "no-cache" });
     const [cartProducts, setCartProducts] = useState([]);
     const { quantity, setQuantity } = useContext(CustomerContext);
     const [selectedProducts, setSelectedProducts] = useState([]);
@@ -20,16 +21,16 @@ export default function Cart() {
     const [terms, setTerms] = useState(false);
     const navigate = useNavigate();
     const [deleteCartProduct] = useMutation(REMOVE_FROM_CART, { fetchPolicy: "no-cache" });
+    const [setOrder] = useMutation(ADD_TO_ORDER, { fetchPolicy: "no-cache" });
 
     useEffect(() => {
         if (data?.getCartProducts) {
+            console.log(data?.getCartProducts, " dataaaaaaaaaaaaaaaaa");
+
             setCartProducts(data.getCartProducts);
             setSelectedProducts(data.getCartProducts.map((product) => product.product_id));
         }
     }, [data]);
-
-    console.log(cartProducts, +" products");
-    console.log(selectedProducts, " selected");
 
 
 
@@ -52,10 +53,19 @@ export default function Cart() {
             prev.includes(id) ? prev.filter((productId) => productId !== id) : [...prev, id]
         );
     };
+    const calculateOfferPrice = (price, offer) => {
+        if (!offer || offer < 1 || offer > 50) return price;
+        return Math.round(price - (price * offer) / 100);
+    };
 
     const subtotal = cartProducts
         .filter((product) => selectedProducts.includes(product.product_id))
-        .reduce((total, item) => total + item.price * item.quantity, 0);
+        .reduce((total, item) => {
+            const effectivePrice = item.offer
+                ? calculateOfferPrice(item.price, item.offer)
+                : item.price;
+            return total + effectivePrice * item.quantity;
+        }, 0);
 
 
     const handleQuantityChange = (id, type) => {
@@ -75,11 +85,8 @@ export default function Cart() {
     const order = (product_id, quantity) => {
         console.log("quantity: ", quantity + 1);
         console.log("product_id ", product_id);
-
-
     }
 
-    const [setOrder] = useMutation(ADD_TO_ORDER, { fetchPolicy: "no-cache" });
     useEffect(() => {
         setOrderProduct(cartProducts.filter((product) => selectedProducts.includes(product.product_id)));
     }, [cartProducts, selectedProducts]);
@@ -117,13 +124,12 @@ export default function Cart() {
         }
     }
     console.log(terms + " initial ");
-    const selectAll=()=>{
+    const selectAll = () => {
         setSelect(select);
-        console.log(select ,"state");
-        
+        console.log(select, "state");
         setSelectedProducts([])
-
     }
+
 
     return (
         <>
@@ -134,7 +140,7 @@ export default function Cart() {
                     </h3>
                 </div>
                 <div className="d-flex flex-row align-items-center px-4 justify-content-start gap-2">
-                    <input type="checkbox"  className="align-middle"onChange={()=>selectAll()}/>
+                    <input type="checkbox" className="align-middle" onChange={() => selectAll()} />
                     <p className="mb-0">Deselect All</p>
                 </div>
 
@@ -161,13 +167,45 @@ export default function Cart() {
                                             </div>
                                             <div className="col-md-8">
                                                 <div className="card-body">
-                                                    <h4 className="card-title">{product.product_name}</h4>
+                                                    <div className="d-flex flex-row justify-content-between align-items-center gap-2">
+                                                        <h4 className="card-title mb-0">{product.product_name}</h4>
+
+                                                        {product.offer && (
+                                                            <div className='d-flex flex-row align-items-center gap-1' style={{ marginBottom: "10px" }}>
+                                                                <h6 className="mb-0 text-success fw-bold">{product.offer}%</h6>
+                                                                <DotLottieReact
+                                                                    src="https://lottie.host/e52be1ea-23aa-48b6-96c8-5f2e5bf2e048/jok5rqbRw0.lottie"
+                                                                    loop
+                                                                    autoplay
+                                                                    style={{
+                                                                        height: "30px",
+                                                                        width: "30px",
+                                                                    }}
+                                                                />
+                                                            </div>
+                                                        )}
+                                                    </div>
+
                                                     <textarea readOnly className="card-text border w-100 no-resize">
                                                         {product.description}
                                                     </textarea>
-                                                    <h5 className="text-success fw-bold">
-                                                        <BsCurrencyRupee /> {product.price}
+                                                    <h5>
+                                                        {product.offer ? (
+                                                            <>
+                                                                <span className="text-muted text-decoration-line-through me-2">
+                                                                    <BsCurrencyRupee /> {product.price}
+                                                                </span>
+                                                                <span className="text-success fw-bold">
+                                                                    <BsCurrencyRupee /> {calculateOfferPrice(product.price, product.offer)}
+                                                                </span>
+                                                            </>
+                                                        ) : (
+                                                            <span className="text-success fw-bold">
+                                                                <BsCurrencyRupee /> {product.price}
+                                                            </span>
+                                                        )}
                                                     </h5>
+
                                                     <div className="d-flex justify-content-between w-100 align-items-center">
                                                         <div className="d-flex align-items-center">
                                                             <button onClick={() => { handleQuantityChange(product.product_id, "decrease"); order(product.product_id, product.quantity) }}

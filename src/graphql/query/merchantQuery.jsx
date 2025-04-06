@@ -9,6 +9,7 @@ export const GET_MERCHANT_PRODUCT = gql`
       price
       merchant_id
       image
+      offer
     }
   }
 `

@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 export default function Orders() {
     const [orderedProduct, setOrderProduct] = useState([]);
     const navigate = useNavigate();
-    const { data, loading, error } = useQuery(GET_ORDERED_PRODUCT,{fetchPolicy:"no-cache"});
+    const { data, loading, error } = useQuery(GET_ORDERED_PRODUCT, { fetchPolicy: "no-cache" });
 
     console.log(data, " responce");
 
@@ -25,13 +25,19 @@ export default function Orders() {
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error fetching Ordered Product</p>;
 
+    const calculateOfferPrice = (price, offer) => {
+        if (!offer || offer < 1 || offer > 50) return price;
+        return Math.round(price - (price * offer) / 100);
+    };
+
+
 
     return (
         <>
             <div className=''>
                 <div className='p-1 ms-5'>
                     <p>
-                        <a role="button" onClick={()=>navigate("/profile")} className="text-decoration-underline text-dark cursor-pointer">Your Account</a>
+                        <a role="button" onClick={() => navigate("/profile")} className="text-decoration-underline text-dark cursor-pointer">Your Account</a>
                         <span className="text-warning"> &gt; Your Orders</span>
                     </p>
                     {/* <p>{json}</p> */}
@@ -51,7 +57,11 @@ export default function Orders() {
                                             <p className='text-success fw-bold mt-3'>ORDER PLACED</p>
                                             <div className='d-flex flex-column'>
                                                 <p className="mb-0">TOTAL :</p>
-                                                <p className="mb-0"><BsCurrencyRupee className='mb-1' />{order.price * order.quantity}</p>
+                                                <p className="mb-0">
+                                                    <BsCurrencyRupee className='mb-1' />
+                                                    {calculateOfferPrice(order.price, order.offer) * order.quantity}
+                                                </p>
+
                                             </div>
                                             <div className='d-flex flex-column'>
                                                 <p className="mb-0">SHIPPED TO:</p>
@@ -61,8 +71,8 @@ export default function Orders() {
                                         <div className='align-items-center gap-3 d-flex justify-content-center mt-2'>
                                             <p className='fw-bold'>
                                                 ORDER STATUS : {" "}
-                                                <span 
-                                                    className={`border border-none rounded p-2 ${order.order_status === "accepted" ? "bg-success text-light": order.order_status === "rejected"? "bg-danger text-light": "bg-warning text-dark" }`}>
+                                                <span
+                                                    className={`border border-none rounded p-2 ${order.order_status === "accepted" ? "bg-success text-light" : order.order_status === "rejected" ? "bg-danger text-light" : "bg-warning text-dark"}`}>
                                                     {order.order_status}
                                                 </span>
                                             </p>
@@ -80,15 +90,38 @@ export default function Orders() {
                                         </div>
                                         <div className="col-md-8 px-5">
                                             <div className="card-body">
-                                                <h4 className="card-title py-2">{order.product_name}</h4>
+                                                <div className='d-flex flex-row justify-content-between align-items-center gap-1 '>
+                                                    <h4 className="card-title py-2">{order.product_name}</h4>
+                                                    <div className='d-flex flex-row'>
+                                                        <h6 className="mb-0 text-success fw-bold mt-1">{order.offer}</h6>
+                                                        <DotLottieReact
+                                                            src="https://lottie.host/e52be1ea-23aa-48b6-96c8-5f2e5bf2e048/jok5rqbRw0.lottie"
+                                                            loop
+                                                            autoplay
+                                                            style={{
+                                                                height: "30px",
+                                                                width: "30px",
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </div>
                                                 <textarea
                                                     readOnly
                                                     className="card-text border border-none w-100 no-resize">
                                                     {order.description}
                                                 </textarea>
-                                                <h5 className="text-success fw-bold">
-                                                    <BsCurrencyRupee className='mb-1' />{order.price} {"(Per Unit)"}
+                                                <h5 className="text-success fw-bold d-flex align-items-center gap-2">
+                                                    <span className="text-muted text-decoration-line-through">
+                                                        <BsCurrencyRupee className='mb-1' />
+                                                        {order.price}
+                                                    </span>
+                                                    <span>
+                                                        <BsCurrencyRupee className='mb-1' />
+                                                        {calculateOfferPrice(order.price, order.offer)} (Per Unit)
+                                                    </span>
                                                 </h5>
+
+
                                                 <div className='d-flex justify-content-between w-100 align-items-center'>
                                                     <span className="p-2 rounded bg-warning mt-2"> <p className="mb-0">Quantity: {order.quantity}</p></span>
                                                 </div>

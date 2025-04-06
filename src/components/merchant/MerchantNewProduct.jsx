@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useForm  } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { FaArrowLeft } from "react-icons/fa";
 import "../customer/profile/Your_profile.css";
@@ -7,7 +7,6 @@ import { UploadButton } from "@bytescale/upload-widget-react";
 import { ADD_PRODUCT } from "../../graphql/mutation/merchantMutation";
 import { useMutation } from "@apollo/client";
 import toast from "react-hot-toast";
-
 
 export default function MerchantNewProduct() {
     const {
@@ -19,49 +18,48 @@ export default function MerchantNewProduct() {
 
     const [imagePreview, setImagePreview] = useState(null);
 
-    const [addProduct]= useMutation(ADD_PRODUCT ,{fetchPolicy :"no-cache"});
-
+    const [addProduct] = useMutation(ADD_PRODUCT, { fetchPolicy: "no-cache" });
 
     const onSubmit = async (data) => {
         const productData = { ...data, image: imagePreview };
         console.log(productData);
-        
+
         if (!imagePreview) {
             alert("Please wait until the image is uploaded.");
+            return;
         }
 
-        try{
-            const{data} = await addProduct({
-                variables :{
-                    input:{
-                        description : productData.description,
-                        image : productData.image,
-                        price :parseInt( productData.price),
-                        product_id : productData.product_id,
-                        product_name : productData.productName
+        try {
+            const { data } = await addProduct({
+                variables: {
+                    input: {
+                        description: productData.description,
+                        image: productData.image,
+                        price: parseInt(productData.price),
+                        product_id: productData.product_id,
+                        product_name: productData.productName,
+                        offer: productData.offer ? parseInt(productData.offer) : null,
                     }
                 }
-            })
-        }
-        catch(err){
+            });
+        } catch (err) {
             console.log(err.message);
         }
         console.log("Product Data:", productData);
-        toast.success("Product Added successfully")
+        toast.success("Product Added successfully");
         reset();
-        setImagePreview(null)
-
+        setImagePreview(null);
     };
 
-    const handleImg=(files)=>{
-        console.log(files[0].fileUrl +" imgurl");
-        setImagePreview(files[0].fileUrl)
-    }
+    const handleImg = (files) => {
+        console.log(files[0].fileUrl + " imgurl");
+        setImagePreview(files[0].fileUrl);
+    };
 
     const options = {
-        apiKey: "public_kW2K8HR3LZ43CXy53qZJJuZhG7ZT", 
+        apiKey: "public_kW2K8HR3LZ43CXy53qZJJuZhG7ZT",
         maxFileCount: 1
-      };
+    };
 
     return (
         <div>
@@ -86,7 +84,6 @@ export default function MerchantNewProduct() {
                                     />
                                     {errors.productName && <div className="invalid-feedback">{errors.productName.message}</div>}
                                 </div>
-
                                 <div className="mb-3">
                                     <label className="form-label">Description</label>
                                     <textarea
@@ -99,9 +96,10 @@ export default function MerchantNewProduct() {
 
                             <div className="col-md-6">
                                 <div className="mb-3">
-                                    <label className="form-label">Product Image</label><br></br>
-                                    <UploadButton options={options} 
-                                        onComplete={files => handleImg(files)}> 
+                                    <label className="form-label">Product Image</label><br />
+                                    <UploadButton
+                                        options={options}
+                                        onComplete={files => handleImg(files)}>
                                         {({ onClick }) =>
                                             <button onClick={onClick} className="border border-none p-2 bg-warning rounded fw-bold">
                                                 Upload a Image...
@@ -119,10 +117,27 @@ export default function MerchantNewProduct() {
                                     <label className="form-label">Price</label>
                                     <input
                                         type="number"
-                                        {...register("price", { required: "Price is required", min: { value: 0, message: "Price cannot be negative" } })}
+                                        {...register("price", {
+                                            required: "Price is required",
+                                            min: { value: 0, message: "Price cannot be negative" }
+                                        })}
                                         className={`form-control ${errors.price ? "is-invalid" : ""}`}
                                     />
                                     {errors.price && <div className="invalid-feedback">{errors.price.message}</div>}
+                                </div>
+
+                                <div className="mb-3">
+                                    <label className="form-label">Offer (%)</label>
+                                    <input
+                                        type="number"
+                                        {...register("offer", {
+                                            min: { value: 1, message: "Minimum offer is 1%" },
+                                            max: { value: 50, message: "Maximum offer is 50%" }
+                                        })}
+                                        className={`form-control ${errors.offer ? "is-invalid" : ""}`}
+                                        placeholder="Optional - Enter offer between 1% to 50%"
+                                    />
+                                    {errors.offer && <div className="invalid-feedback">{errors.offer.message}</div>}
                                 </div>
                             </div>
                         </div>

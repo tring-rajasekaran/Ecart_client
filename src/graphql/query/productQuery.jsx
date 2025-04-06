@@ -8,6 +8,7 @@ export const RANDOM_PRODUCT = gql`
       description
       image
       price
+      offer
     }
   }
 `;
@@ -20,6 +21,7 @@ export const SEARCH_PRODUCTS = gql`
       description
       price
       image
+      offer
     }
   }
 `;
@@ -34,6 +36,7 @@ export const GET_CART_PRODUCT = gql`
       description
       image
       quantity
+      offer
     }
   }
 `;
@@ -63,6 +66,7 @@ export const GET_ORDERED_PRODUCT = gql`
         customer_name
         image
         order_status
+        offer
   }
 }
 `

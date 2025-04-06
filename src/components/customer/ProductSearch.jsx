@@ -9,6 +9,7 @@ import { useLocation } from "react-router-dom";
 import useSearchProducts from "../../hooks/useSearchProducts";
 import toast from "react-hot-toast";
 import useAddToCart from '../common/useAddtoCart';
+import { DotLottieReact } from "@lottiefiles/dotlottie-react";
 
 
 export default function ProductSearch() {
@@ -26,6 +27,11 @@ export default function ProductSearch() {
 
     const { addToCartHandler } = useAddToCart();
 
+    const calculateOfferPrice = (price, offer) => {
+        if (!offer || offer < 1 || offer > 50) return price;
+        return Math.round(price - (price * offer) / 100);
+      };
+
     return (
         <Container className="p-3 text-center">
             {loading ? (
@@ -38,10 +44,24 @@ export default function ProductSearch() {
                         {currentProducts.map((product) => (
                             <Col key={product.product_id} lg={3} className="mb-4">
                                 <Card style={{ width: "100%", height: "450px" }}>
+                                    {product.offer &&
+                                        <div className="d-flex flex-row justify-content-end gap-1 " style={{ marginBottom: "-5px" }}>
+                                            <h5 className="text-success">{product.offer}</h5>
+                                            <DotLottieReact
+                                                src="https://lottie.host/e52be1ea-23aa-48b6-96c8-5f2e5bf2e048/jok5rqbRw0.lottie"
+                                                loop
+                                                autoplay
+                                                style={{
+                                                    height: "30px",
+                                                    width: "30px",
+                                                }}
+                                            />
+                                        </div>
+                                    }
                                     <Card.Img
                                         variant="top"
                                         src={product.image || "https://via.placeholder.com/300x120"}
-                                        style={{ height: "220px", objectFit: "contain" }}
+                                        style={{ height: "190px", objectFit: "contain", ...(!product.offer && { marginTop: "20px" }) }}
                                     />
                                     <Card.Body className="d-flex flex-column">
                                         <Card.Title>{product.product_name}</Card.Title>
@@ -56,13 +76,23 @@ export default function ProductSearch() {
                                             {product.description}
                                         </Card.Text>
                                         <p>
-                                            Price:{" "}
-                                            <span className="text-success fw-bold">
-                                                <BsCurrencyRupee className="mb-1 fw-bold" />
-                                                {product.price}
-                                            </span>
+                                            Price:
+                                            {product.offer ? (
+                                                <>
+                                                    <span className='text-muted text-decoration-line-through ms-2'>
+                                                        ₹{product.price}
+                                                    </span>
+                                                    <span className='text-success fw-bold ms-2'>
+                                                        ₹{calculateOfferPrice(product.price, product.offer)}
+                                                    </span>
+                                                </>
+                                            ) : (
+                                                <span className='text-success fw-bold ms-2'>
+                                                    ₹{product.price}
+                                                </span>
+                                            )}
                                         </p>
-                                        <Button variant="warning" onClick={()=>addToCartHandler(product?.product_id)}>Add to Cart</Button>
+                                        <Button variant="warning" onClick={() => addToCartHandler(product?.product_id)}>Add to Cart</Button>
                                     </Card.Body>
                                 </Card>
                             </Col>

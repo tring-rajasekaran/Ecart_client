@@ -10,6 +10,9 @@ import { useQuery } from '@apollo/client';
 import { useEffect, useState } from 'react';
 import { toast } from "react-hot-toast";
 import useAddToCart from '../common/useAddtoCart';
+import { DotLottieReact } from '@lottiefiles/dotlottie-react';
+
+
 
 export default function Slide() {
 
@@ -30,6 +33,13 @@ export default function Slide() {
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error fetching products</p>;
   // console.log(products[1].product_id, "id ");
+
+
+  const calculateOfferPrice = (price, offer) => {
+    if (!offer || offer < 1 || offer > 50) return price;
+    return Math.round(price - (price * offer) / 100);
+  };
+
   return (
     <>
       <div className=" px-2 mt-4 w-100 ">
@@ -64,33 +74,84 @@ export default function Slide() {
       </div>
       <div className="m-2 d-flex flex-wrap gap-3 justify-content-center p-3">
         {products.map(product => (
-          <Card key={product.id} className='col-12 col-md-6 col-lg-3 mb-4' style={{ width: '290px', height: '450px' }}>
-            <Card.Img
-              variant="top"
-              src={product.image || "https://via.placeholder.com/300x220"}
-              style={{ height: "220px", objectFit: "contain", padding: "20px", }}
-            />
-            <Card.Body className="d-flex flex-column">
-              <Card.Title>{product.product_name}</Card.Title>
+          <Card key={product.id} className=' col-md-6 col-lg-3 mb-4 d-flex flex-column' style={{ width: '290px', height: '450px' }}>
 
-              <Card.Text
-                className="flex-grow-1 text-muted p-1"
+            <div className="d-flex flex-column flex-grow-1">
+              {product.offer && (
+                <div className='d-flex flex-row justify-content-end align-items-center gap-1' style={{ marginBottom: "-10px" }}>
+                  <h6 className="mb-0 text-success fw-bold">{product.offer}</h6>
+                  <DotLottieReact
+                    src="https://lottie.host/e52be1ea-23aa-48b6-96c8-5f2e5bf2e048/jok5rqbRw0.lottie"
+                    loop
+                    autoplay
+                    style={{
+                      height: "30px",
+                      width: "30px",
+                    }}
+                  />
+                </div>
+              )}
+
+              {/* Product Image */}
+              <Card.Img
+                variant="top"
+                src={product.image || "https://via.placeholder.com/300x220"}
                 style={{
-                  maxHeight: "70px",
+                  height: "190px",
+                  objectFit: "contain",
+                  padding: "10px",
+                  ...(!product.offer && { marginTop: "10px" })
+                }}
+              />
+
+              <Card.Body className="d-flex flex-column ">
+                <Card.Title>{product.product_name}</Card.Title>
+
+                <Card.Text className="flex-grow-1 text-muted" style={{
+                  maxHeight: "60px",
                   overflowY: "auto",
                   textOverflow: "ellipsis",
                   whiteSpace: "normal"
                 }}>
-                {product.description}
-              </Card.Text>
+                  {product.description}
+                </Card.Text>
 
-              <p>Price: <span className='text-success fw-bold'><BsCurrencyRupee className='mb-1 fw-bold' />{product.price}</span></p>
+                {/* Price with offer calculation */}
+                <p>
+                  Price:
+                  {product.offer ? (
+                    <>
+                      <span className='text-muted text-decoration-line-through ms-2'>
+                        ₹{product.price}
+                      </span>
+                      <span className='text-success fw-bold ms-2'>
+                        ₹{calculateOfferPrice(product.price, product.offer)}
+                      </span>
+                    </>
+                  ) : (
+                    <span className='text-success fw-bold ms-2'>
+                      ₹{product.price}
+                    </span>
+                  )}
+                </p>
+              </Card.Body>
+            </div>
+            <div className="p-2 ">
               <Button
-                variant="warning" onClick={() => addToCartHandler(product?.product_id)}>Add to Cart</Button>
-            </Card.Body>
+                variant="warning"
+                className="w-100"
+                onClick={() => addToCartHandler(product?.product_id)}
+              >
+                Add to Cart
+              </Button>
+            </div>
           </Card>
+
+
+
         ))}
       </div>
     </>
   );
 }
+
