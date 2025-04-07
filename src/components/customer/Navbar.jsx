@@ -3,8 +3,8 @@ import { FaLocationDot } from "react-icons/fa6";
 import { FaSearch, FaShoppingCart, FaUserCircle } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import '@fortawesome/fontawesome-free/css/all.min.css';
-import {GET_RECENT_SEARCH } from '../../graphql/query/productQuery';
-import { useMutation, useQuery } from '@apollo/client';
+import { GET_CART_QUANTITY, GET_RECENT_SEARCH } from '../../graphql/query/productQuery';
+import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { CustomerContext } from '../../App';
 import LogoutModal from './LogoutModal'
 import Location from './Location';
@@ -13,6 +13,7 @@ import toast from 'react-hot-toast';
 
 
 export default function Navbar() {
+    const userName=localStorage.getItem('username')
     const [showLoginAlert, setShowLoginAlert] = useState(false);
     const [searchTerm, setSearchTerm] = useState("");
     const { quantity, setQuantity, isLogin, setIsLogin, jwt } = useContext(CustomerContext)
@@ -33,8 +34,7 @@ export default function Navbar() {
 
     const { data: Searchdata } = useQuery(GET_RECENT_SEARCH, { fetchPolicy: "no-cache", skip: !localStorage.getItem("username") });
 
-    console.log(Searchdata?.getRecentSearch,"Searchdata");
-
+    console.log(Searchdata?.getRecentSearch, "Searchdata");
 
     useEffect(() => {
         if (Searchdata?.getRecentSearch) {
@@ -45,6 +45,24 @@ export default function Navbar() {
 
     console.log(searchedTerm + " searhed term");
 
+    const { data } = useQuery(GET_CART_QUANTITY, {
+        fetchPolicy: "no-cache",
+        onCompleted: (data) => {
+            if (data && data.getCartQuantity !== undefined) {
+                setQuantity(data.getCartQuantity);
+            }
+        }
+    });
+
+
+
+    useEffect(() => {
+        if (data && data.getCartQuantity !== undefined && userName){
+            setQuantity(data.getCartQuantity);
+        }
+    }, [userName])
+    
+    
 
 
     useEffect(() => {
@@ -52,7 +70,6 @@ export default function Navbar() {
             navigate(`/products?search=${encodeURIComponent(searchTerm.trim())}`);
         }
     }, [searchTerm]);
-
 
 
     const gotocart = () => {
@@ -130,6 +147,7 @@ export default function Navbar() {
         setQuantity(0)
         setIsLogin(false)
         setSearchedTerm([]);
+        localStorage.clear();
         navigate("/MerchantLogin?type=Merchant")
     }
 

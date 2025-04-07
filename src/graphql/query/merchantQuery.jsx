@@ -29,6 +29,7 @@ export const GET_MERCHANT_ORDER = gql`
             email 
             address
             order_status
+            offer
         }
     }
 `

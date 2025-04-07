@@ -25,8 +25,8 @@ export default function Profile() {
   useEffect(() => {
     if (data && data.getCustomerDetails?.length > 0) {
       setFormData({
-        name: data.getCustomerDetails[0].name || "Enter you name",
-        email: data.getCustomerDetails[0].email || "Email (Cannot Be changed)",
+        name: data.getCustomerDetails[0].name ,
+        email: data.getCustomerDetails[0].email,
         address: data.getCustomerDetails[0].address || "Add your Delivery Address By clicking Edit Button ⬇️",
       });
     }

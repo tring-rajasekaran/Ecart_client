@@ -42,18 +42,6 @@ function App() {
     }
   }, [isLogin]);
 
-  const [getCartQuantity] = useLazyQuery(GET_CART_QUANTITY, {
-    fetchPolicy: 'network-only',
-    onCompleted: (data) => {
-      console.log('data ', data.getCartQuantity);
-      setQuantity(data.getCartQuantity);
-    },
-  });
-
-  useEffect(() => {
-      getCartQuantity();
-  }, []);
-
 
   return (
     <>

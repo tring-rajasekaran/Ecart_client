@@ -1,5 +1,4 @@
 import React, { useContext, useEffect, useState } from "react";
-import { BsCurrencyRupee } from "react-icons/bs";
 import { MdDeleteForever } from "react-icons/md";
 import { FaShoppingCart } from "react-icons/fa";
 import { GET_CART_PRODUCT } from "../../graphql/query/productQuery";
@@ -25,7 +24,7 @@ export default function Cart() {
 
     useEffect(() => {
         if (data?.getCartProducts) {
-            console.log(data?.getCartProducts, " dataaaaaaaaaaaaaaaaa");
+            console.log(data?.getCartProducts, " data");
 
             setCartProducts(data.getCartProducts);
             setSelectedProducts(data.getCartProducts.map((product) => product.product_id));
@@ -124,11 +123,11 @@ export default function Cart() {
         }
     }
     console.log(terms + " initial ");
-    const selectAll = () => {
-        setSelect(select);
-        console.log(select, "state");
-        setSelectedProducts([])
-    }
+    // const selectAll = () => {
+    //     setSelect(select);
+    //     console.log(select, "state");
+    //     setSelectedProducts([])
+    // }
 
 
     return (
@@ -139,13 +138,13 @@ export default function Cart() {
                         Your Cart <FaShoppingCart className="fs-3 text-dark mb-1" />
                     </h3>
                 </div>
-                <div className="d-flex flex-row align-items-center px-4 justify-content-start gap-2">
+                {/* <div className="d-flex flex-row align-items-center px-4 justify-content-start gap-2">
                     <input type="checkbox" className="align-middle" onChange={() => selectAll()} />
                     <p className="mb-0">Deselect All</p>
-                </div>
+                </div> */}
 
                 <div className="w-100 h-100 d-flex" >
-                    <div className="w-75 vh-50 border-end border-dark overflow-auto" style={{ maxHeight: "450px" }}>
+                    <div className="w-75 vh-50 border-end border-dark overflow-auto" style={{ maxHeight: "445px" }}>
                         <div className="container mt-4">
                             {cartProducts.length > 0 ? (
                                 cartProducts.map((product) => (
@@ -193,15 +192,15 @@ export default function Cart() {
                                                         {product.offer ? (
                                                             <>
                                                                 <span className="text-muted text-decoration-line-through me-2">
-                                                                    <BsCurrencyRupee /> {product.price}
+                                                                    ₹ {product.price}
                                                                 </span>
                                                                 <span className="text-success fw-bold">
-                                                                    <BsCurrencyRupee /> {calculateOfferPrice(product.price, product.offer)}
+                                                                    ₹ {calculateOfferPrice(product.price, product.offer)}
                                                                 </span>
                                                             </>
                                                         ) : (
                                                             <span className="text-success fw-bold">
-                                                                <BsCurrencyRupee /> {product.price}
+                                                                ₹ {product.price}
                                                             </span>
                                                         )}
                                                     </h5>
@@ -256,7 +255,7 @@ export default function Cart() {
                         <div className="w-100 h-100">
                             <div>
                                 <h5>
-                                    Sub Total ({selectedProducts.length} items): <BsCurrencyRupee /> {subtotal}
+                                    Sub Total ({selectedProducts.length} items): ₹ {subtotal}
                                 </h5>
                             </div>
                             <div className="d-flex align-items-center ms-5">

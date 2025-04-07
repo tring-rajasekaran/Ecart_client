@@ -30,7 +30,7 @@ export default function Login() {
 
       console.log("User logged in successfully");
       toast.success("User logged in successfully");
-      setIsLogin(true)
+      setIsLogin(true);
       navigate("/slide");
 
     } catch (err) {

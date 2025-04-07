@@ -93,16 +93,20 @@ export default function Orders() {
                                                 <div className='d-flex flex-row justify-content-between align-items-center gap-1 '>
                                                     <h4 className="card-title py-2">{order.product_name}</h4>
                                                     <div className='d-flex flex-row'>
-                                                        <h6 className="mb-0 text-success fw-bold mt-1">{order.offer}</h6>
-                                                        <DotLottieReact
-                                                            src="https://lottie.host/e52be1ea-23aa-48b6-96c8-5f2e5bf2e048/jok5rqbRw0.lottie"
-                                                            loop
-                                                            autoplay
-                                                            style={{
-                                                                height: "30px",
-                                                                width: "30px",
-                                                            }}
-                                                        />
+                                                        {order.offer &&
+                                                            <>
+                                                                <h6 className="mb-0 text-success fw-bold mt-1">{order.offer}</h6>
+                                                                <DotLottieReact
+                                                                    src="https://lottie.host/e52be1ea-23aa-48b6-96c8-5f2e5bf2e048/jok5rqbRw0.lottie"
+                                                                    loop
+                                                                    autoplay
+                                                                    style={{
+                                                                        height: "30px",
+                                                                        width: "30px",
+                                                                    }}
+                                                                />
+                                                            </>
+                                                        }
                                                     </div>
                                                 </div>
                                                 <textarea
@@ -111,12 +115,13 @@ export default function Orders() {
                                                     {order.description}
                                                 </textarea>
                                                 <h5 className="text-success fw-bold d-flex align-items-center gap-2">
-                                                    <span className="text-muted text-decoration-line-through">
-                                                        <BsCurrencyRupee className='mb-1' />
-                                                        {order.price}
-                                                    </span>
+                                                    {order.offer &&
+                                                        <span className="text-muted text-decoration-line-through">
+                                                            ₹{order.price}
+                                                        </span>
+                                                    }
                                                     <span>
-                                                        <BsCurrencyRupee className='mb-1' />
+                                                        <BsCurrencyRupee className='mb-1'/>
                                                         {calculateOfferPrice(order.price, order.offer)} (Per Unit)
                                                     </span>
                                                 </h5>

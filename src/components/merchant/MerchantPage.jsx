@@ -145,8 +145,8 @@ export default function MerchantPage() {
                             <Col key={product.product_id} lg={3} className="mb-4">
                                 <Card style={{ width: "100%", height: "auto" }}>
                                     {product.offer && (
-                                        <div className='d-flex flex-row justify-content-end align-items-center gap-1' style={{ marginBottom: "-10px" }}>
-                                            <h6 className="mb-0 text-success fw-bold">{product.offer}</h6>
+                                        <div className='d-flex flex-row justify-content-end align-items-center gap-1' style={{ marginBottom: "-20px" }}>
+                                            <h6 className="mb-1 text-success fw-bold"style={{zIndex:"1"}}>You Offered {product.offer} </h6>
                                             <DotLottieReact
                                                 src="https://lottie.host/e52be1ea-23aa-48b6-96c8-5f2e5bf2e048/jok5rqbRw0.lottie"
                                                 loop
@@ -158,7 +158,7 @@ export default function MerchantPage() {
                                     <Card.Img
                                         variant="top"
                                         src={product.image}
-                                        style={{ height: "190px", objectFit: "contain", ...(!product.offer && { marginTop: "10px" }) }}
+                                        style={{ height: "190px", objectFit: "contain", ...(product.offer && { marginTop: "-10px" }) }}
                                     />
                                     <Card.Body className="d-flex flex-column">
                                         <Card.Title>{product.product_name}</Card.Title>

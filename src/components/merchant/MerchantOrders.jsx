@@ -40,6 +40,19 @@ export default function MerchantOrders() {
             console.error("Error updating order status:", err);
         }
     };
+    const calculateOfferPrice = (price, offer) => {
+        if (!offer || offer < 1 || offer > 50) return price;
+        return Math.round(price - (price * offer) / 100);
+    };
+    const calculateTotal=(price , offer , quantity)=>{
+        if(!offer){
+            return quantity*price;
+        }
+        else if(offer){
+            let offeredPrice = calculateOfferPrice(price , offer)
+            return offeredPrice * quantity;
+        }
+    }
 
     return (
         <>
@@ -63,7 +76,7 @@ export default function MerchantOrders() {
                                         <p className='text-success fw-bold mt-3'>ORDERED</p>
                                         <div className='d-flex flex-column'>
                                             <p className="mb-0">TOTAL :</p>
-                                            <p className="mb-0"><BsCurrencyRupee className='mb-1' />{product.price}</p>
+                                            <p className="mb-0"><BsCurrencyRupee className='mb-1' />{calculateTotal(product.price , product.offer , product.quantity)}</p>
                                         </div>
                                         <div className='d-flex flex-column'>
                                             <p className="mb-0">ORDERED BY:</p>
@@ -104,13 +117,40 @@ export default function MerchantOrders() {
                                     </div>
                                     <div className="col-md-8 px-5">
                                         <div className="card-body">
-                                            <h4 className="card-title py-2">{product.product_name}</h4>
+                                            <div className='d-flex justify-content-between align-items-center'>
+                                                <h4 className="card-title py-2">{product.product_name}</h4>
+                                                {product.offer &&
+                                                    <div className='d-flex'>
+                                                        <h6 className="mb-0 text-success fw-bold mt-1">You Offered {product.offer}</h6>
+                                                        <DotLottieReact
+                                                            src="https://lottie.host/e52be1ea-23aa-48b6-96c8-5f2e5bf2e048/jok5rqbRw0.lottie"
+                                                            loop
+                                                            autoplay
+                                                            style={{
+                                                                height: "30px",
+                                                                width: "30px",
+                                                            }}
+                                                        />
+                                                    </div>
+                                                }
+                                            </div>
                                             <textarea
                                                 readOnly
                                                 className="card-text border border-none w-100 no-resize">
                                                 {product.description}
                                             </textarea>
-                                            <h5 className="text-success fw-bold"><BsCurrencyRupee className='mb-1' />{product.price}</h5>
+                                            <h5 className="text-success fw-bold d-flex align-items-center gap-2">
+                                                {product.offer &&
+                                                    <span className="text-muted text-decoration-line-through">
+                                                        <BsCurrencyRupee className='mb-1' />
+                                                        {product.price}
+                                                    </span>
+                                                }
+                                                <span>
+                                                    <BsCurrencyRupee className='mb-1' />
+                                                    {calculateOfferPrice(product.price, product.offer)} (Per Unit)
+                                                </span>
+                                            </h5>
                                             <div className='d-flex justify-content-start w-100 align-items-end gap-2'>
                                                 <p><span className='fw-bold'>Address:</span> {product.address}</p>
                                             </div>
@@ -122,7 +162,7 @@ export default function MerchantOrders() {
                         {products.length === 0 &&
                             <div className='d-flex flex-column justify-content-center align-items-center'>
                                 <h3>Sorry You don't have any orders !</h3>
-                                <DotLottieReact className='w-50' 
+                                <DotLottieReact className='w-50'
                                     src="https://lottie.host/d91e1d4e-0b9f-4dcc-8c59-d6bff4defb8c/JErolswApH.lottie"
                                     loop
                                     autoplay
@@ -132,7 +172,7 @@ export default function MerchantOrders() {
                         }
                     </div>
                 </div>
-                
+
                 <div className="w-25 d-flex flex-column align-items-center justify-content-center gap-0">
                     <h4 className="fw-bold text-center mb-0">Total Number of <br />Orders: {products.length}</h4>
                 </div>

@@ -4,11 +4,9 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
-import { BsCurrencyRupee } from "react-icons/bs";
-import { RANDOM_PRODUCT } from '../../graphql/query/productQuery';
+import { GET_CART_QUANTITY, RANDOM_PRODUCT } from '../../graphql/query/productQuery';
 import { useQuery } from '@apollo/client';
 import { useEffect, useState } from 'react';
-import { toast } from "react-hot-toast";
 import useAddToCart from '../common/useAddtoCart';
 import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 
@@ -17,7 +15,7 @@ import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 export default function Slide() {
 
   const { addToCartHandler } = useAddToCart();
-
+  const userName=localStorage.getItem('username')
   const [products, setProducts] = useState([]);
   const { data, loading, error } = useQuery(RANDOM_PRODUCT);
 
@@ -39,6 +37,23 @@ export default function Slide() {
     if (!offer || offer < 1 || offer > 50) return price;
     return Math.round(price - (price * offer) / 100);
   };
+
+  //  const { data} = useQuery(GET_CART_QUANTITY, {
+  //       fetchPolicy: "no-cache",
+  //       onCompleted: (data) => {
+  //           if (data && data.getCartQuantity !== undefined) {
+  //               setQuantity(data.getCartQuantity);
+  //           }
+  //       }
+  //   });
+
+
+
+  //   useEffect(() => {
+  //       if (data && data.getCartQuantity !== undefined && userName){
+  //           setQuantity(data.getCartQuantity);
+  //       }
+  //   }, [userName])
 
   return (
     <>
